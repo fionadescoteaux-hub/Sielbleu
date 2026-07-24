@@ -460,7 +460,7 @@ const SO1_ACTIONS = [
   {key:'priceroutes', label:'Price each route and its margin', detail:'Confirmed price points (NH €90, groups €85, one-to-one €65, online €22.50–€25/mo) and the contribution each sale makes after delivery cost.', why:'So volume is sized to the surplus, not just the top line.', owner:'Thomas', byWhen:'M2–M4', goto:'finalprice'},
   {key:'convertvolume', label:'Convert to volume', detail:'How many sales per route per year to hit the target (e.g. €500k one-to-one ≈ 7,700 sessions/yr).', why:'Makes the target a concrete sales number.', owner:'Thomas', byWhen:'M2–M4', goto:'forecast'},
   {key:'proposition', label:'Build the proposition & sales/marketing plan', detail:'The 65+ positioning (personas per age band incl. carer/family buyer) and the activity to deliver the volume.', why:'You cannot market without knowing who you sell to; the activity delivers the volume.', owner:'Thomas + Marketing', byWhen:'M3–M6', goto:'pathway'},
-  {key:'resource', label:'Resource it', detail:'Size the workforce to the volume (38 to 85 trajectory, 50km radius) and build the recruitment and retention plan, incl. NI trainers.', why:'If the volume cannot be staffed, the plan is not real.', owner:'Thomas / board', byWhen:'M4–M5', goto:null},
+  {key:'resource', label:'Resource it', detail:'Size the workforce to the volume (38 to 85 trajectory, 50km radius) and build the recruitment and retention plan, incl. NI trainers.', why:'If the volume cannot be staffed, the plan is not real.', owner:'Thomas / board', byWhen:'M4–M5', goto:'forecast'},
   {key:'boardplan', label:'Assemble the growth plan for board review', detail:'', why:'The board sign-off that commits the plan.', owner:'Thomas / Fiona', byWhen:'M4 — Sep', goto:null}
 ];
 let so1ActionState = {};
@@ -476,7 +476,15 @@ let contractIdCounter = 1;
 function nextContractId(){ return 'ctr'+(contractIdCounter++); }
 let contracts = [];
 const CONTRACT_HEALTH = [{key:'healthy',label:'Healthy'},{key:'watch',label:'Watch'},{key:'risk',label:'At risk'}];
-let marketTargets = {ambition:'', baseline:'', targetDate:''};
+let marketTargets = {ambition:'', baseline:'', targetDate:'', hseIncome:''};
+let roiMarketSizing = {nursinghomes:{population:'',share:'',freq:''}, onetoone:{population:'',share:'',freq:''}, patientgroups:{population:'',share:'',freq:''}};
+let workforcePlan = {currentTrainers:'', targetTrainers:'', sessionsPerWeek:'', weeksPerYear:''};
+let personaIdCounter = 1;
+let personas = [];
+function nextPersonaId(){ return 'ps'+(personaIdCounter++); }
+let activityIdCounter = 1;
+let marketingActivities = [];
+function nextActivityId(){ return 'ac'+(activityIdCounter++); }
 
 
 const CHECKLIST_ITEMS = [
@@ -1020,6 +1028,36 @@ function borderRowHTML(o){
 }
 function renderBorder(){ const tb=document.getElementById('border-rows'); if(tb) tb.innerHTML=borderRelationships.map(borderRowHTML).join(''); }
 
+function personaRowHTML(x){
+  return `<tr data-row-id="${x.id}">
+    <td><input type="text" placeholder="e.g. 65–74 active" data-action="personafield" data-id="${x.id}" data-field="ageBand" value="${esc(x.ageBand||'')}"></td>
+    <td><input type="text" placeholder="Self, carer / family, home, GP…" data-action="personafield" data-id="${x.id}" data-field="buyer" value="${esc(x.buyer||'')}"></td>
+    <td><input type="text" placeholder="Need / motivation" data-action="personafield" data-id="${x.id}" data-field="need" value="${esc(x.need||'')}"></td>
+    <td><input type="text" placeholder="Message that lands" data-action="personafield" data-id="${x.id}" data-field="message" value="${esc(x.message||'')}"></td>
+    <td><input type="text" placeholder="Routes it feeds" data-action="personafield" data-id="${x.id}" data-field="routes" value="${esc(x.routes||'')}"></td>
+    <td style="text-align:center; width:34px;"><button type="button" class="remove-btn" data-action="removepersona" data-id="${x.id}" title="Remove">✕</button></td>
+  </tr>`;
+}
+function renderPersonas(){
+  const tb=document.getElementById('persona-rows'); if(tb) tb.innerHTML=personas.map(personaRowHTML).join('');
+  const em=document.getElementById('personas-empty'); if(em) em.style.display=personas.length?'none':'';
+}
+function activityRowHTML(x){
+  return `<tr data-row-id="${x.id}">
+    <td><input type="text" placeholder="e.g. Nursing-home outreach, Louth" data-action="activityfield" data-id="${x.id}" data-field="activity" value="${esc(x.activity||'')}"></td>
+    <td><input type="text" placeholder="Route" data-action="activityfield" data-id="${x.id}" data-field="route" value="${esc(x.route||'')}"></td>
+    <td><input type="text" placeholder="e.g. 3 homes / 150 sessions" data-action="activityfield" data-id="${x.id}" data-field="target" value="${esc(x.target||'')}"></td>
+    <td><input type="text" placeholder="Owner" data-action="activityfield" data-id="${x.id}" data-field="owner" value="${esc(x.owner||'')}"></td>
+    <td><input type="text" placeholder="e.g. M3–M6" data-action="activityfield" data-id="${x.id}" data-field="when" value="${esc(x.when||'')}"></td>
+    <td><select data-action="activityfield" data-id="${x.id}" data-field="status">${['Planned','Underway','Done'].map(s=>`<option${(x.status||'Planned')===s?' selected':''}>${s}</option>`).join('')}</select></td>
+    <td style="text-align:center; width:34px;"><button type="button" class="remove-btn" data-action="removeactivity" data-id="${x.id}" title="Remove">✕</button></td>
+  </tr>`;
+}
+function renderActivities(){
+  const tb=document.getElementById('activity-rows'); if(tb) tb.innerHTML=marketingActivities.map(activityRowHTML).join('');
+  const em=document.getElementById('activities-empty'); if(em) em.style.display=marketingActivities.length?'none':'';
+}
+
 function buildROIPanel(){
   const nhP = findProduct('nursinghomes'), pgP = findProduct('patientgroups');
   let niMonthTh = ''; for(let i=1;i<=12;i++) niMonthTh += `<th style="text-align:right;">M${i}</th>`;
@@ -1371,6 +1409,28 @@ function buildPathwayPanel(){
     </table>
     </div>
     <div id="pw-ltv-summary"></div>
+  </div>
+  <div class="card">
+    <div class="competitor-market-head"><h3>65+ proposition — personas (SO1 action 6)</h3><button type="button" class="add-btn" data-action="addpersona">+ Add persona</button></div>
+    <p class="sub">"You cannot market without knowing who you sell to." One row per persona — per age band, including the carer / family buyer who often makes the decision. The message column is the positioning that actually lands with that buyer.</p>
+    <div class="summary-table">
+    <table>
+      <thead><tr><th>Age band / persona</th><th>Who buys</th><th>Need / motivation</th><th>Message that lands</th><th>Routes it feeds</th><th></th></tr></thead>
+      <tbody id="persona-rows">${personas.map(personaRowHTML).join('')}</tbody>
+    </table>
+    </div>
+    <p class="empty-note" id="personas-empty" style="${personas.length?'display:none;':''}">No personas yet — start with the nursing-home decision maker and the carer / family buyer.</p>
+  </div>
+  <div class="card">
+    <div class="competitor-market-head"><h3>Sales &amp; marketing activity plan</h3><button type="button" class="add-btn" data-action="addactivity">+ Add activity</button></div>
+    <p class="sub">The activity that delivers the volume — nursing-home outreach, new-geography rollout, the GP pipeline, online. Each row is one activity with an owner and a date, so the plan is a commitment, not a wish.</p>
+    <div class="summary-table">
+    <table>
+      <thead><tr><th>Activity</th><th>Route</th><th>Volume it should deliver</th><th>Owner</th><th>When</th><th>Status</th><th></th></tr></thead>
+      <tbody id="activity-rows">${marketingActivities.map(activityRowHTML).join('')}</tbody>
+    </table>
+    </div>
+    <p class="empty-note" id="activities-empty" style="${marketingActivities.length?'display:none;':''}">No activities yet.</p>
   </div>`;
 }
 
@@ -1385,6 +1445,23 @@ function buildForecastPanel(){
     <p class="sub">Revenue and contribution over the next 12 months (M1–M12), built from each product's final ROI price (ex-VAT) and the monthly volumes you plan. Set volumes directly, or use the lead → conversion funnel underneath as a sanity check on whether the plan is reachable. The company roll-up at the bottom shows monthly and cumulative surplus after fixed overhead.</p>
     <div class="note" style="border-left-color:var(--amber);">Nothing showing? Click <strong>Load example figures</strong> to fill this tab (and the pathway and pipeline) with sample numbers so you can see it working — then type your own over them. <div style="margin-top:8px;"><button type="button" class="load-btn" data-action="loadexample">Load example figures</button></div></div>
     <div id="fc-headline"></div>
+  </div>`;
+  html += `
+  <div class="card">
+    <h2>Workforce &amp; capacity — SO1 action 7</h2>
+    <p class="sub">"If the volume cannot be staffed, the plan is not real." Checks the sessions planned below against trainer capacity (session routes only — online is excluded). The plan's trajectory is 38 → 85 trainers within a 50km radius.</p>
+    <div class="fieldrow">
+      <div class="field"><label>Trainers today</label><input type="number" step="1" min="0" placeholder="38" data-action="workforcefield" data-field="currentTrainers" value="${workforcePlan.currentTrainers||''}"></div>
+      <div class="field"><label>Trainer target (trajectory)</label><input type="number" step="1" min="0" placeholder="85" data-action="workforcefield" data-field="targetTrainers" value="${workforcePlan.targetTrainers||''}"></div>
+      <div class="field"><label>Sessions per trainer / week</label><input type="number" step="0.5" min="0" data-action="workforcefield" data-field="sessionsPerWeek" value="${workforcePlan.sessionsPerWeek||''}"></div>
+      <div class="field"><label>Delivery weeks / year</label><input type="number" step="1" min="0" placeholder="e.g. 44" data-action="workforcefield" data-field="weeksPerYear" value="${workforcePlan.weeksPerYear||''}"></div>
+    </div>
+    <div class="statgrid">
+      <div class="stat"><div class="lbl">Sessions planned (12 months)</div><div class="val" id="wf-planned">—</div></div>
+      <div class="stat"><div class="lbl">Capacity today</div><div class="val" id="wf-capnow">—</div><div class="exact" id="wf-captarget"></div></div>
+      <div class="stat"><div class="lbl">Trainers the plan needs</div><div class="val" id="wf-required">—</div></div>
+    </div>
+    <div id="wf-note"></div>
   </div>`;
   products.forEach(p=>{
     html += `
@@ -1629,6 +1706,7 @@ function buildDashboardPanel(){
     <div class="card kpi"><div class="label">Forecast contribution</div><div class="value" id="dash-kpi-contrib">—</div><div class="delta" id="dash-kpi-contrib-sub">From the 12-month plan</div></div>
     <div class="card kpi"><div class="label">SO1 plan actions</div><div class="value" id="dash-kpi-actions">—</div><div class="delta" id="dash-kpi-actions-sub">Tracked in Market &amp; Targets</div></div>
   </div>
+  <div class="callout" id="dash-hse-brief" style="display:none; margin:0 0 12px;"></div>
   <div class="grid two">
     <div class="card"><h3 class="section-title">Growth route control table</h3><div class="helper">Target, price, required volume and live pipeline per route — together, not in separate systems. Set each route's growth target here.</div>
       <div class="summary-table"><table><thead><tr><th>Route</th><th>Priority</th><th>Price (ex-VAT)</th><th>Growth target (€/yr)</th><th>Required volume</th><th>Weighted pipeline</th><th>Margin</th></tr></thead><tbody>${routeRows}</tbody></table></div>
@@ -2069,10 +2147,37 @@ function buildTargetCard(){
       <div class="field"><label>Growth gap</label><div class="stat" style="margin-top:0;"><div class="val" id="mt-gap" style="font-size:17px;">—</div></div></div>
       <div class="field"><label>Target date</label><input type="text" placeholder="To confirm after OR2" data-action="markettarget" data-field="targetDate" value="${esc(marketTargets.targetDate||'')}"></div>
     </div>
+    <div class="fieldrow">
+      <div class="field" style="max-width:300px;"><label>HSE income (€/yr) — watching brief</label><input type="number" step="1000" min="0" data-action="markettarget" data-field="hseIncome" value="${marketTargets.hseIncome||''}"><span class="hint" id="mt-hse-share">Concentration stays visible, not driving — the board's footnote.</span></div>
+    </div>
     <div id="mt-note"></div>
   </div>`;
 }
-function buildMarketPanel(){ return buildTargetCard() + buildSO1TrackerCard() + CRM_NOTICE + CRM_STATIC.market; }
+function buildRoiSizingCard(){
+  const cols = ['nursinghomes','onetoone','patientgroups'].map(k=>findProduct(k)).filter(Boolean);
+  const th = cols.map(p=>`<th>${p.name}</th>`).join('');
+  const rowInput = (field, label, type)=> `<tr><td>${label}</td>${cols.map(p=>`<td><input type="${type==='num'?'number':'text'}" ${type==='num'?'step="0.1" min="0" ':''}style="width:100%;" data-action="roimarketfield" data-product="${p.key}" data-field="${field}" value="${esc((roiMarketSizing[p.key]&&roiMarketSizing[p.key][field])||'')}"></td>`).join('')}</tr>`;
+  return `
+  <div class="card">
+    <h2>Size the ROI market — SO1 action 2</h2>
+    <p class="sub">Bottom-up: 65+ population (or bed count) in the target geographies, a realistic obtainable share, and session frequency. Implied income uses each route's final ROI price (ex-VAT) — the sense-check that the growth target is real, not just a strategy number.</p>
+    <table>
+      <thead><tr><th></th>${th}</tr></thead>
+      <tbody>
+        ${rowInput('population','65+ population / bed count in target geographies','text')}
+        ${rowInput('share','Realistic obtainable share (%)','num')}
+        ${rowInput('freq','Sessions per unit per year (frequency)','num')}
+        <tr><td style="font-weight:700;">Implied income at that share (€/yr)</td>${cols.map(p=>`<td id="roi-implied-${p.key}" style="font-weight:700;">—</td>`).join('')}</tr>
+      </tbody>
+    </table>
+    <div class="statgrid" style="grid-template-columns:repeat(2,1fr);">
+      <div class="stat"><div class="lbl">Total implied income</div><div class="val" id="roi-implied-total">—</div></div>
+      <div class="stat"><div class="lbl">vs growth gap</div><div class="val" id="roi-vs-gap" style="font-size:15px;">—</div></div>
+    </div>
+    <div id="roi-sizing-note"></div>
+  </div>`;
+}
+function buildMarketPanel(){ return buildTargetCard() + buildRoiSizingCard() + buildSO1TrackerCard() + CRM_NOTICE + CRM_STATIC.market; }
 function buildBoardPanel(){ return CRM_NOTICE + CRM_STATIC.board + buildSummaryPanel(); }
 function buildBlueprintPanel(){ return CRM_STATIC.blueprint; }
 
@@ -2684,6 +2789,7 @@ function updateAll(){
     const fixedOverheadAnnual = Math.max(0, overheadTotal() - directLabourRecovered);
     const monthlyOverhead = fixedOverheadAnnual/12;
 
+    let plannedSessionsTotal = 0;
     products.forEach(p=>{
       const r = results[p.key];
       const finalNI = (p.proposedPrice!==null && p.proposedPrice!==undefined && p.proposedPrice!=='')? parseFloat(p.proposedPrice) : r.priceNI;
@@ -2708,6 +2814,7 @@ function updateAll(){
         setText(`fc-${p.key}-rev-${m}`, exVat!==null? gbp(rev,0):'—');
         setText(`fc-${p.key}-con-${m}`, contribUnit!==null? gbp(con,0):'—');
       }
+      if(p.key!=='online') plannedSessionsTotal += unitTot;
       setText(`fc-${p.key}-unittot`, num(unitTot,0));
       setText(`fc-${p.key}-revtot`, exVat!==null? gbp(revTot,0):'—');
       setText(`fc-${p.key}-contot`, contribUnit!==null? gbp(conTot,0):'—');
@@ -2742,6 +2849,66 @@ function updateAll(){
       dashAttn.push({sev:'warn', goto:'forecast', text:'12-month forecast has no volumes planned yet'});
     }
     const stTot=document.getElementById('fcco-sur-total'); if(stTot){ stTot.textContent=(annSurplus<0?'−':'')+gbp(Math.abs(annSurplus),0); stTot.style.color=annSurplus>=0?'var(--green)':'var(--red)'; stTot.style.fontWeight='700'; }
+
+    // ---- Workforce & capacity (SO1 action 7) ----
+    const wfCur=parseFloat(workforcePlan.currentTrainers)||0, wfTgt=parseFloat(workforcePlan.targetTrainers)||0;
+    const wfSpw=parseFloat(workforcePlan.sessionsPerWeek)||0, wfWpy=parseFloat(workforcePlan.weeksPerYear)||0;
+    const perTrainerYr = wfSpw*wfWpy;
+    setText('wf-planned', plannedSessionsTotal>0? num(plannedSessionsTotal,0)+' sessions' : '—');
+    setText('wf-capnow', (wfCur>0&&perTrainerYr>0)? num(wfCur*perTrainerYr,0)+' sessions' : '—');
+    setText('wf-captarget', (wfTgt>0&&perTrainerYr>0)? 'At target ('+num(wfTgt,0)+' trainers): '+num(wfTgt*perTrainerYr,0)+' sessions' : '');
+    const wfReq = (perTrainerYr>0&&plannedSessionsTotal>0)? Math.ceil(plannedSessionsTotal/perTrainerYr) : null;
+    setText('wf-required', wfReq!==null? num(wfReq,0)+' trainers' : '—');
+    const wfNote = document.getElementById('wf-note');
+    if(wfNote){
+      if(wfReq!==null && wfCur>0){
+        if(wfReq<=wfCur){
+          wfNote.innerHTML = `<div class="note" style="border-left-color:var(--green);">The plan is staffable — ${num(plannedSessionsTotal,0)} sessions needs ${num(wfReq,0)} trainer${wfReq===1?'':'s'} and you have ${num(wfCur,0)}.</div>`;
+        } else {
+          wfNote.innerHTML = `<div class="note" style="border-left-color:var(--red);">Staffing gap: the plan needs ${num(wfReq,0)} trainers but you have ${num(wfCur,0)} — recruit ${num(wfReq-wfCur,0)} more${wfTgt>0? ' (trajectory target '+num(wfTgt,0)+')':''} or re-phase the volume.</div>`;
+          dashAttn.push({sev:'bad', goto:'forecast', text:`Forecast needs ~${num(wfReq,0)} trainers — only ${num(wfCur,0)} in place (recruit ${num(wfReq-wfCur,0)})`});
+        }
+      } else wfNote.innerHTML='';
+    }
+
+    // ---- ROI market sizing (SO1 action 2) ----
+    let roiImpliedTotal=0;
+    ['nursinghomes','onetoone','patientgroups'].forEach(k=>{
+      const p=findProduct(k); const r=results[k]; const s=roiMarketSizing[k]||{};
+      const pop=parseFloat(String(s.population||'').replace(/[^0-9.]/g,''))||0, sh=parseFloat(s.share)||0, fq=parseFloat(s.freq)||0;
+      let exv=null;
+      if(p&&r){
+        const fNI=(p.proposedPrice!==null&&p.proposedPrice!==undefined&&p.proposedPrice!=='')? parseFloat(p.proposedPrice):r.priceNI;
+        if(fNI!==null&&fNI!==undefined) exv = p.priceBasis==='inc'? fNI/(1+(parseFloat(p.vatRate)||0)/100) : fNI;
+      }
+      const units=pop*sh/100*fq;
+      const implied=(units>0&&exv!==null)? units*exv : null;
+      setText('roi-implied-'+k, implied!==null? gbp(implied,0) : (units>0? num(units,0)+' sessions/yr — set a price' : '—'));
+      if(implied) roiImpliedTotal+=implied;
+    });
+    setText('roi-implied-total', roiImpliedTotal>0? gbp(roiImpliedTotal,0) : '—');
+    const _amb=parseFloat(marketTargets.ambition)||0, _base=parseFloat(marketTargets.baseline)||0;
+    const _gap=(_amb>0&&_base>0)? _amb-_base : null;
+    setText('roi-vs-gap', (roiImpliedTotal>0&&_gap!==null&&_gap>0)? (roiImpliedTotal>=_gap? 'Covers the gap ('+num(roiImpliedTotal/_gap*100,0)+'%)' : 'Covers '+num(roiImpliedTotal/_gap*100,0)+'% of the gap') : '—');
+    const roiNote=document.getElementById('roi-sizing-note');
+    if(roiNote){
+      if(roiImpliedTotal>0&&_gap!==null&&_gap>0){
+        roiNote.innerHTML = roiImpliedTotal>=_gap
+          ? `<div class="note" style="border-left-color:var(--green);">At that share the market is worth ${gbp(roiImpliedTotal,0)}/yr against a growth gap of ${gbp(_gap,0)} — the target passes the bottom-up sense-check.</div>`
+          : `<div class="note" style="border-left-color:var(--amber);">At that share the sized market yields ${gbp(roiImpliedTotal,0)}/yr against a growth gap of ${gbp(_gap,0)} — either the obtainable share must rise, more routes must carry weight, or the target timing extends.</div>`;
+      } else roiNote.innerHTML='';
+    }
+
+    // ---- HSE watching brief ----
+    const _hse=parseFloat(marketTargets.hseIncome)||0;
+    const hsePct=(_hse>0&&_base>0)? _hse/_base*100 : null;
+    const hseHint=document.getElementById('mt-hse-share');
+    if(hseHint) hseHint.textContent = hsePct!==null? ('HSE ≈ '+num(hsePct,0)+'% of current income — on a watching brief, visible but not driving.') : "Concentration stays visible, not driving — the board's footnote.";
+    const hseBrief=document.getElementById('dash-hse-brief');
+    if(hseBrief){
+      if(hsePct!==null){ hseBrief.style.display=''; hseBrief.innerHTML=`<b>Watching brief:</b> HSE is ${gbp(_hse,0)} ≈ <b>${num(hsePct,0)}%</b> of current income — unsecured beyond 2027. The growth-led plan stands; concentration stays visible, not driving.`; }
+      else hseBrief.style.display='none';
+    }
     const headEl=document.getElementById('fc-headline');
     if(headEl){
       const hasPlan = annRev>0;
@@ -3197,6 +3364,14 @@ document.addEventListener('input', e=>{
     if(l){ l.label = t.value; l.short = t.value; }
     if(_initComplete) saveStateToLocalStorage();
     return; // skip updateAll — nothing numeric changed
+  } else if(action==='roimarketfield'){
+    const rp = roiMarketSizing[t.dataset.product]; if(rp) rp[t.dataset.field] = t.value;
+  } else if(action==='workforcefield'){
+    workforcePlan[t.dataset.field] = t.value;
+  } else if(action==='personafield'){
+    const x = personas.find(o=>o.id===t.dataset.id); if(x) x[t.dataset.field] = t.value;
+  } else if(action==='activityfield'){
+    const x = marketingActivities.find(o=>o.id===t.dataset.id); if(x) x[t.dataset.field] = t.value;
   } else if(action==='nimarketfield'){
     niMarketSizing[t.dataset.product][t.dataset.field] = t.value;
   } else if(action==='niprize'){
@@ -3362,6 +3537,18 @@ document.addEventListener('click', e=>{
   } else if(action==='removeborder'){
     borderRelationships = borderRelationships.filter(x=>x.id!==t.dataset.id);
     renderBorder(); if(_initComplete) saveStateToLocalStorage();
+  } else if(action==='addpersona'){
+    personas.push({id:nextPersonaId(), ageBand:'', buyer:'', need:'', message:'', routes:''});
+    renderPersonas(); if(_initComplete) saveStateToLocalStorage();
+  } else if(action==='removepersona'){
+    personas = personas.filter(x=>x.id!==t.dataset.id);
+    renderPersonas(); if(_initComplete) saveStateToLocalStorage();
+  } else if(action==='addactivity'){
+    marketingActivities.push({id:nextActivityId(), activity:'', route:'', target:'', owner:'', when:'', status:'Planned'});
+    renderActivities(); if(_initComplete) saveStateToLocalStorage();
+  } else if(action==='removeactivity'){
+    marketingActivities = marketingActivities.filter(x=>x.id!==t.dataset.id);
+    renderActivities(); if(_initComplete) saveStateToLocalStorage();
   } else if(action==='removeoverhead'){
     const key = t.dataset.line;
     const idx = OVERHEAD_LINES.findIndex(x=>x.key===key);
@@ -3383,7 +3570,7 @@ const STORAGE_KEY = 'sielbleu_pricing_tool_v1';
 
 function getFullState(){
   return {overhead, overheadLines:OVERHEAD_LINES, overheadLineCounter, products, competitorData, marketValueData, finalPricingData, roiAnswers, checklistState, so1ActionState, accounts, accountIdCounter, contracts, contractIdCounter, marketTargets, competitorIdCounter, exchangeRate, journeyStages, pathwaySteps, pathwayIdCounter, pipeline, pipelineIdCounter,
-          niMarketSizing, niPrizeTarget, borderRelationships, borderIdCounter, so2ChecklistState, showNotes: document.getElementById("toggle-notes").checked};
+          niMarketSizing, niPrizeTarget, borderRelationships, borderIdCounter, so2ChecklistState, roiMarketSizing, workforcePlan, personas, personaIdCounter, marketingActivities, activityIdCounter, showNotes: document.getElementById("toggle-notes").checked};
 }
 
 function applyState(state){
@@ -3435,6 +3622,12 @@ function applyState(state){
     document.getElementById('toggle-notes').checked = false;
     document.body.classList.add('hide-notes');
   }
+  if(state.roiMarketSizing) Object.assign(roiMarketSizing, state.roiMarketSizing);
+  if(state.workforcePlan) Object.assign(workforcePlan, state.workforcePlan);
+  if(Array.isArray(state.personas)) personas = state.personas;
+  if(state.personaIdCounter) personaIdCounter = Math.max(personaIdCounter, state.personaIdCounter);
+  if(Array.isArray(state.marketingActivities)) marketingActivities = state.marketingActivities;
+  if(state.activityIdCounter) activityIdCounter = Math.max(activityIdCounter, state.activityIdCounter);
   if(state.so2ChecklistState) Object.assign(so2ChecklistState, state.so2ChecklistState);
   pipeline.forEach(o=>{ if(o.market===undefined) o.market = 'roi'; });
 }
