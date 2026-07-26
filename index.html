@@ -886,7 +886,7 @@ function productPanel(p){
     <p class="sub">Unit: 1 ${p.unit}${p.priceNote? ' · '+p.priceNote:''}</p>
     ${p.outsourced? `<div class="note" style="margin-top:0;">${p.name} is developed and produced outside the organisation, so its main cost is the outsourced production cost below — not internal labour. It only carries whatever share of the shared overhead lines you deliberately allocate in the table below (nothing, by default). Marking a direct-labour line is optional here.</div>` : ''}
 
-    <div class="budgetstrip">
+    <div class="budgetstrip" id="budgetstrip-${p.key}">
       <div class="budgetstrip-label">Left to allocate, org-wide, before you touch this table</div>
       <div class="chiprow">${budgetStripHTML(p)}</div>
     </div>
@@ -2320,6 +2320,12 @@ function updateAll(){
         chipVal.style.color = fg;
       }
     });
+    // hide the strip entirely when every line is fully allocated — it only appears when there's something to fix
+    const _strip = document.getElementById('budgetstrip-'+p.key);
+    if(_strip){
+      const _anyLeft = OVERHEAD_LINES.some(l=>Math.abs(lineRemaining[l.key])>=0.5);
+      _strip.style.display = _anyLeft? '' : 'none';
+    }
     setText(`out-${p.key}-totalalloc`, gbp(r.totalAllocated,2));
     setText(`out-${p.key}-direct`, r.directPerUnit!==null? gbp(r.directPerUnit,0): '—');
     setText(`out-${p.key}-direct-exact`, r.directPerUnit!==null? '('+gbp(r.directPerUnit,2)+' exact)':'');
