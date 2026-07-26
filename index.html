@@ -2936,23 +2936,25 @@ function updateAll(){
     if(bridgeEl){
       if(_amb>0 && _base>0){
         const routeColors = {nursinghomes:'var(--brand-blue-deep)', patientgroups:'#4fc6e0', onetoone:'var(--brand-yellow-deep)', hospital:'#8fb7c6', online:'#b78fc6'};
-        let cum = _base;
-        let rows = `<div class="metric-row" style="grid-template-columns:170px 1fr 120px;"><span style="font-weight:700;">Current baseline</span><div class="bar"><span style="width:${Math.min(100,_base/_amb*100)}%; background:var(--brand-navy);"></span></div><span style="text-align:right; font-weight:700;">${gbp(_base,0)}</span></div>`;
+        let cum = 0;
+        const basePct = Math.min(100, _base/_amb*100);
+        let rows = `<div class="metric-row" style="grid-template-columns:170px 1fr 120px;"><span style="color:var(--muted);">Current baseline <span style="font-size:9px;">(reference)</span></span><div class="bar" style="background:transparent; border:1px dashed var(--line);"><span style="width:${basePct}%; background:repeating-linear-gradient(45deg,#c9dfe6,#c9dfe6 5px,#e7f2f5 5px,#e7f2f5 10px);"></span></div><span style="text-align:right; color:var(--muted);">${gbp(_base,0)}</span></div>`;
         products.forEach(p=>{
           const rv = _annRevByRoute[p.key]||0;
           if(rv>0){
             const startPct = Math.min(100, cum/_amb*100);
             cum += rv;
             const wPct = Math.max(0.5, Math.min(100-startPct, rv/_amb*100));
-            rows += `<div class="metric-row" style="grid-template-columns:170px 1fr 120px;"><span>+ ${esc(p.name)}</span><div class="bar"><span style="margin-left:${startPct}%; width:${wPct}%; background:${routeColors[p.key]||'var(--brand-blue-deep)'}; border-radius:8px;"></span></div><span style="text-align:right;">+${gbp(rv,0)}</span></div>`;
+            rows += `<div class="metric-row" style="grid-template-columns:170px 1fr 120px;"><span>${esc(p.name)}</span><div class="bar"><span style="margin-left:${startPct}%; width:${wPct}%; background:${routeColors[p.key]||'var(--brand-blue-deep)'}; border-radius:8px;"></span></div><span style="text-align:right;">${gbp(rv,0)}</span></div>`;
           }
         });
         const shortfall = _amb - cum;
+        const growth = cum - _base;
         const pct = Math.min(100, cum/_amb*100);
-        rows += `<div class="metric-row" style="grid-template-columns:170px 1fr 120px; border-top:1px solid var(--line); padding-top:8px;"><span style="font-weight:800;">Planned position</span><div class="bar" style="height:12px;"><span style="width:${pct}%; background:linear-gradient(90deg,var(--brand-navy),var(--brand-blue-deep));"></span></div><span style="text-align:right; font-weight:800;">${gbp(cum,0)}</span></div>`;
+        rows += `<div class="metric-row" style="grid-template-columns:170px 1fr 120px; border-top:1px solid var(--line); padding-top:8px;"><span style="font-weight:800;">Planned annual income</span><div class="bar" style="height:12px;"><span style="width:${pct}%; background:linear-gradient(90deg,var(--brand-navy),var(--brand-blue-deep));"></span></div><span style="text-align:right; font-weight:800;">${gbp(cum,0)}</span></div>`;
         rows += shortfall<=0
-          ? `<div class="note" style="border-left-color:var(--green);">The plan reaches the ambition — ${gbp(cum,0)} against ${gbp(_amb,0)}${shortfall<0? ' ('+gbp(Math.abs(shortfall),0)+' of headroom)':''}.</div>`
-          : `<div class="note" style="border-left-color:var(--amber);">Planned position is ${gbp(cum,0)} of the ${gbp(_amb,0)} ambition — <strong>${gbp(shortfall,0)} still to find</strong> (${num(pct,0)}% covered). More volume, a further reprice, or a longer runway closes it.</div>`;
+          ? `<div class="note" style="border-left-color:var(--green);">The 12-month plan reaches the ambition — ${gbp(cum,0)} against ${gbp(_amb,0)}${shortfall<0? ' ('+gbp(Math.abs(shortfall),0)+' of headroom)':''}${growth>0? ', '+gbp(growth,0)+' of growth on the current baseline':''}.</div>`
+          : `<div class="note" style="border-left-color:var(--amber);">The 12-month plan totals ${gbp(cum,0)} — ${growth>=0? gbp(growth,0)+' of growth on the baseline, but ':''}<strong>${gbp(shortfall,0)} short of the ${gbp(_amb,0)} ambition</strong> (${num(pct,0)}% covered). More volume, a further reprice, or a longer runway closes it.</div>`;
         bridgeEl.innerHTML = rows;
       } else {
         bridgeEl.innerHTML = '<p class="empty-note">Set the ambition and baseline in Market &amp; Targets, then plan volumes in Volume &amp; Forecast, to see the bridge build.</p>';
@@ -3285,7 +3287,8 @@ function updateAll(){
       const _card = document.querySelector('.dash-card[data-goto="'+_nextKey+'"]');
       if(_card) _card.classList.add('dash-next');
       if(_hintEl){
-        const _label = _card ? _card.querySelector('.dash-card-title').textContent : _nextKey;
+        const _titleEl = _card ? _card.querySelector('.dash-card-title') : null;
+        const _label = _titleEl ? _titleEl.textContent : _nextKey;
         _hintEl.textContent = 'Next step → ' + _label;
       }
     } else if(_hintEl){
