@@ -99,6 +99,11 @@ th{color:#55717f;background:#f7fcfd}td{border-bottom-color:#e9f2f4}
 .tabpanel{display:none}.tabpanel.active{display:block}
 .nav button.subtab{padding:7px 10px 7px 44px;font-size:12px;opacity:.94}
 .tab-sep{display:block;margin:15px 10px 5px;font-size:9px;font-weight:900;letter-spacing:.14em;color:#7fb2c4;text-transform:uppercase}
+.navgroup-items{display:none}
+.navgroup.open .navgroup-items{display:block}
+.nav .caret{margin-left:auto;font-size:10px;opacity:.75;transition:transform .15s;flex:0 0 auto}
+.navgroup.open .caret{transform:rotate(90deg)}
+.navgroup.open button.grouphead{background:rgba(120,232,255,.06)}
 .card{margin-bottom:14px}
 .card h2{font-size:17px;margin:0 0 5px;color:var(--brand-navy);letter-spacing:-.01em}
 .sub{font-size:12px;color:var(--muted);margin:0 0 12px;line-height:1.5}
@@ -692,17 +697,26 @@ const TABS = [
 function buildTabNav(){
   const nav = document.getElementById('tabnav');
   let html = '';
+  let inGroup = false;
   TABS.forEach((t,i)=>{
-    if(t.groupBefore) html += `<span class="tab-sep">${t.groupBefore}</span>`;
+    if(t.sub && !inGroup){
+      inGroup = true;
+      html += `<div class="navgroup" id="navgroup-pricing"><button type="button" class="grouphead" data-grouptoggle="pricing"><span class="num">05</span>Pricing engine<span class="caret">▸</span></button><div class="navgroup-items">`;
+    }
+    if(!t.sub && inGroup){ inGroup = false; html += `</div></div>`; }
     const cls = ((i===0?'active ':'') + (t.sub?'subtab':'')).trim();
     html += `<button data-tab="${t.key}"${cls?` class="${cls}"`:''}>${t.num?`<span class="num">${t.num}</span>`:''}${t.label}</button>`;
   });
+  if(inGroup) html += `</div></div>`;
   nav.innerHTML = html;
   nav.addEventListener('click', e=>{
+    const gh = e.target.closest('button[data-grouptoggle]');
+    if(gh){ gh.parentElement.classList.toggle('open'); return; }
     const btn = e.target.closest('button[data-tab]');
     if(!btn) return;
-    document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b===btn));
+    document.querySelectorAll('nav.tabs button[data-tab]').forEach(b=>b.classList.toggle('active', b===btn));
     document.querySelectorAll('.tabpanel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+btn.dataset.tab));
+    const grp = btn.closest('.navgroup'); if(grp) grp.classList.add('open');
     const pt = document.getElementById('pageTitle');
     if(pt) pt.textContent = btn.textContent.replace(/^\d+\s*/,'');
     window.scrollTo({top:0});
@@ -1713,6 +1727,11 @@ function buildDashboardPanel(){
       <div id="rt-note"></div>
     </div>
     <div class="card"><h3 class="section-title">Management exceptions</h3><div id="dash-attention" class="dash-attention"></div></div>
+  </div>
+  <div class="card" style="margin-top:12px">
+    <h3 class="section-title">Path to the 2030 ambition — the bridge</h3>
+    <div class="helper">Current baseline, plus what each route's 12-month plan adds at the realigned price (ex-VAT), against the ambition. This is what the pricing work in section 05 and the volumes in section 06 add up to.</div>
+    <div id="dash-bridge"><p class="empty-note">Set the ambition and baseline in Market &amp; Targets, then plan volumes in Volume &amp; Forecast, to see the bridge build.</p></div>
   </div>
   <div class="grid three" style="margin-top:12px">
     <div class="card"><h3 class="section-title">Pipeline by stage</h3><div id="dash-stagebars"><p class="empty-note">No prospects yet.</p></div></div>
@@ -2790,6 +2809,7 @@ function updateAll(){
     const monthlyOverhead = fixedOverheadAnnual/12;
 
     let plannedSessionsTotal = 0;
+    const _annRevByRoute = {};
     products.forEach(p=>{
       const r = results[p.key];
       const finalNI = (p.proposedPrice!==null && p.proposedPrice!==undefined && p.proposedPrice!=='')? parseFloat(p.proposedPrice) : r.priceNI;
@@ -2815,6 +2835,7 @@ function updateAll(){
         setText(`fc-${p.key}-con-${m}`, contribUnit!==null? gbp(con,0):'—');
       }
       if(p.key!=='online') plannedSessionsTotal += unitTot;
+      _annRevByRoute[p.key] = revTot;
       setText(`fc-${p.key}-unittot`, num(unitTot,0));
       setText(`fc-${p.key}-revtot`, exVat!==null? gbp(revTot,0):'—');
       setText(`fc-${p.key}-contot`, contribUnit!==null? gbp(conTot,0):'—');
@@ -2908,6 +2929,34 @@ function updateAll(){
     if(hseBrief){
       if(hsePct!==null){ hseBrief.style.display=''; hseBrief.innerHTML=`<b>Watching brief:</b> HSE is ${gbp(_hse,0)} ≈ <b>${num(hsePct,0)}%</b> of current income — unsecured beyond 2027. The growth-led plan stands; concentration stays visible, not driving.`; }
       else hseBrief.style.display='none';
+    }
+
+    // ---- Path to the ambition: the bridge ----
+    const bridgeEl = document.getElementById('dash-bridge');
+    if(bridgeEl){
+      if(_amb>0 && _base>0){
+        const routeColors = {nursinghomes:'var(--brand-blue-deep)', patientgroups:'#4fc6e0', onetoone:'var(--brand-yellow-deep)', hospital:'#8fb7c6', online:'#b78fc6'};
+        let cum = _base;
+        let rows = `<div class="metric-row" style="grid-template-columns:170px 1fr 120px;"><span style="font-weight:700;">Current baseline</span><div class="bar"><span style="width:${Math.min(100,_base/_amb*100)}%; background:var(--brand-navy);"></span></div><span style="text-align:right; font-weight:700;">${gbp(_base,0)}</span></div>`;
+        products.forEach(p=>{
+          const rv = _annRevByRoute[p.key]||0;
+          if(rv>0){
+            const startPct = Math.min(100, cum/_amb*100);
+            cum += rv;
+            const wPct = Math.max(0.5, Math.min(100-startPct, rv/_amb*100));
+            rows += `<div class="metric-row" style="grid-template-columns:170px 1fr 120px;"><span>+ ${esc(p.name)}</span><div class="bar"><span style="margin-left:${startPct}%; width:${wPct}%; background:${routeColors[p.key]||'var(--brand-blue-deep)'}; border-radius:8px;"></span></div><span style="text-align:right;">+${gbp(rv,0)}</span></div>`;
+          }
+        });
+        const shortfall = _amb - cum;
+        const pct = Math.min(100, cum/_amb*100);
+        rows += `<div class="metric-row" style="grid-template-columns:170px 1fr 120px; border-top:1px solid var(--line); padding-top:8px;"><span style="font-weight:800;">Planned position</span><div class="bar" style="height:12px;"><span style="width:${pct}%; background:linear-gradient(90deg,var(--brand-navy),var(--brand-blue-deep));"></span></div><span style="text-align:right; font-weight:800;">${gbp(cum,0)}</span></div>`;
+        rows += shortfall<=0
+          ? `<div class="note" style="border-left-color:var(--green);">The plan reaches the ambition — ${gbp(cum,0)} against ${gbp(_amb,0)}${shortfall<0? ' ('+gbp(Math.abs(shortfall),0)+' of headroom)':''}.</div>`
+          : `<div class="note" style="border-left-color:var(--amber);">Planned position is ${gbp(cum,0)} of the ${gbp(_amb,0)} ambition — <strong>${gbp(shortfall,0)} still to find</strong> (${num(pct,0)}% covered). More volume, a further reprice, or a longer runway closes it.</div>`;
+        bridgeEl.innerHTML = rows;
+      } else {
+        bridgeEl.innerHTML = '<p class="empty-note">Set the ambition and baseline in Market &amp; Targets, then plan volumes in Volume &amp; Forecast, to see the bridge build.</p>';
+      }
     }
     const headEl=document.getElementById('fc-headline');
     if(headEl){
@@ -3463,8 +3512,9 @@ document.addEventListener('click', e=>{
     const navBtn = document.querySelector(`nav.tabs button[data-tab="${key}"]`);
     if(navBtn){
       const pt=document.getElementById('pageTitle'); if(pt) pt.textContent=navBtn.textContent.replace(/^\d+\s*/,'');
-      document.querySelectorAll('nav.tabs button').forEach(b=>b.classList.toggle('active', b===navBtn));
+      document.querySelectorAll('nav.tabs button[data-tab]').forEach(b=>b.classList.toggle('active', b===navBtn));
       document.querySelectorAll('.tabpanel').forEach(p=>p.classList.toggle('active', p.id==='panel-'+key));
+      const grp = navBtn.closest('.navgroup'); if(grp) grp.classList.add('open');
       navBtn.scrollIntoView({block:'nearest', inline:'nearest'});
     }
     return;
