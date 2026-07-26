@@ -493,7 +493,7 @@ function nextActivityId(){ return 'ac'+(activityIdCounter++); }
 
 
 const CHECKLIST_ITEMS = [
-  {key:'costs', label:'Product-level costs (Part 2)'},
+  {key:'costs', label:'Service-level costs (Part 2)'},
   {key:'benchmarks', label:'Pricing benchmarks (Step A)'},
   {key:'valueprops', label:'Value propositions (Step B)'},
   {key:'decisions', label:'Pricing decisions (Step C)'}
@@ -736,7 +736,7 @@ function buildOverheadPanel(){
   return `
   <div class="card">
     <h2>Annual overhead — whole organisation</h2>
-    <p class="sub">Your real figures. Rename any line, edit its amount, remove it with the ✕, or add a new one — every product's cost floor updates automatically.</p>
+    <p class="sub">Your real figures. Rename any line, edit its amount, remove it with the ✕, or add a new one — every service's cost floor updates automatically.</p>
     <table>
       <thead><tr><th>Line item</th><th>Amount (€)</th><th></th></tr></thead>
       <tbody>${overheadRowsHTML()}</tbody>
@@ -745,7 +745,7 @@ function buildOverheadPanel(){
     <div style="margin-top:12px;">
       <button type="button" class="add-btn" data-action="addoverhead">+ Add overhead line</button>
     </div>
-    <div class="note" style="margin-top:12px;">A newly added line starts at <strong>0% in every product</strong>, so nothing is charged to a product until you deliberately allocate it (the Cross-check tab shows it as fully left to allocate until then). Removing a line clears it from every product's allocation too.</div>
+    <div class="note" style="margin-top:12px;">A newly added line starts at <strong>0% in every service</strong>, so nothing is charged to a service until you deliberately allocate it (the Cross-check tab shows it as fully left to allocate until then). Removing a line clears it from every service's allocation too.</div>
   </div>`;
 }
 
@@ -892,7 +892,7 @@ function productPanel(p){
     </div>
 
     <table>
-      <thead><tr><th>Overhead line</th><th>Direct labour?</th><th>Share %</th><th>Allocated € (type either)</th><th>Left to allocate (all products)</th></tr></thead>
+      <thead><tr><th>Overhead line</th><th>Direct labour?</th><th>Share %</th><th>Allocated € (type either)</th><th>Left to allocate (all services)</th></tr></thead>
       <tbody>${allocationRowsHTML(p)}</tbody>
       <tfoot><tr><td colspan="3" style="font-weight:700;">Total allocated to ${p.name}</td><td id="out-${p.key}-totalalloc" style="font-weight:700; text-align:right;"></td><td></td></tr></tfoot>
     </table>
@@ -901,7 +901,7 @@ function productPanel(p){
       <div class="field">
         <label>Direct labour — what it's for</label>
         <input type="text" data-action="directlabel" data-product="${p.key}" value="${esc(p.directLabel||'')}" placeholder="e.g. Play therapist delivery time">
-        <span class="hint">Tick one line in the table above as this product's direct labour (click it again to clear). It's the line that scales with volume — note here what it actually pays for. Everything else stays in the fixed overhead pool.</span>
+        <span class="hint">Tick one line in the table above as this service's direct labour (click it again to clear). It's the line that scales with volume — note here what it actually pays for. Everything else stays in the fixed overhead pool.</span>
       </div>
     </div>
 
@@ -931,7 +931,7 @@ function productPanel(p){
       <div class="stat"><div class="lbl">Overhead / ${p.unit}</div><div class="val" id="out-${p.key}-overhead"></div><div class="exact" id="out-${p.key}-overhead-exact"></div></div>
       <div class="stat"><div class="lbl">= Cost floor</div><div class="val" id="out-${p.key}-floor"></div><div class="exact" id="out-${p.key}-floor-exact"></div></div>
     </div>
-    <div class="note">"Overhead" here isn't one single line above — it's the total allocated to ${p.name} minus whichever line you've marked as direct labour. That line scales with volume (so it counts as direct cost, per unit); everything else is the fixed pool this product has to clear regardless of volume, which is what break-even below is measured against.</div>
+    <div class="note">"Overhead" here isn't one single line above — it's the total allocated to ${p.name} minus whichever line you've marked as direct labour. That line scales with volume (so it counts as direct cost, per unit); everything else is the fixed pool this service has to clear regardless of volume, which is what break-even below is measured against.</div>
 
     <hr class="divider">
 
@@ -976,7 +976,7 @@ function productPanel(p){
       <div class="stat"><div class="lbl">Sales to break even</div><div class="val" id="out-${p.key}-breakeven"></div></div>
       <div class="stat"><div class="lbl">Sales to hit profit target</div><div class="val" id="out-${p.key}-profittarget"></div></div>
     </div>
-    <div class="note">Contribution per sale = price − direct cost per unit (not the full cost floor). It's what each sale puts toward the overhead this product carries. Using the floor here instead would subtract overhead twice — once already inside the floor, again per sale — and understate how many sales you actually need.</div>
+    <div class="note">Contribution per sale = price − direct cost per unit (not the full cost floor). It's what each sale puts toward the overhead this service carries. Using the floor here instead would subtract overhead twice — once already inside the floor, again per sale — and understate how many sales you actually need.</div>
     <div id="out-${p.key}-surplusnote"></div>
 
     <details class="roi">
@@ -1131,7 +1131,7 @@ function buildROIPanel(){
       </div>
     </div>
     <div id="ni-sizing-vs-prize" class="note"></div>
-    <div class="note">Set each route's NI price in its own product tab (the "NI market" section near the bottom) — the implied-income row and Stage 2 below both use that same price.</div>
+    <div class="note">Set each route's NI price in its own service tab (the "NI market" section near the bottom) — the implied-income row and Stage 2 below both use that same price.</div>
   </div>
 
   <div class="card">
@@ -1211,8 +1211,8 @@ function buildFloorSummaryPanel(){
   return `
   <div class="card">
     <div class="toolbar"><button onclick="window.print()">Print / save as PDF</button></div>
-    <h2>Cost floor summary — all products</h2>
-    <p class="sub">The floor each product has to clear, built from its direct cost per unit and its overhead share, shown next to the current price and its NI equivalent. All figures come from each product's own tab — this is the one-look cost-floor view.</p>
+    <h2>Cost floor summary — all services</h2>
+    <p class="sub">The floor each service has to clear, built from its direct cost per unit and its overhead share, shown next to the current price and its NI equivalent. All figures come from each service's own tab — this is the one-look cost-floor view.</p>
     <div class="fieldrow">
       <div class="field" style="max-width:280px;">
         <label>Exchange rate for NI equivalent (€1 = £)</label>
@@ -1222,7 +1222,7 @@ function buildFloorSummaryPanel(){
     </div>
     <div class="summary-table">
     <table>
-      <thead><tr><th>Product</th><th>Direct / unit</th><th>Overhead / unit</th><th>Cost floor</th><th>Units/yr</th><th>Price (ROI)</th><th>≈ NI price (£)</th><th>Gap vs floor</th><th>True ex-VAT</th><th>Margin (ex-VAT − floor)</th><th>Margin %</th></tr></thead>
+      <thead><tr><th>Service</th><th>Direct / unit</th><th>Overhead / unit</th><th>Cost floor</th><th>Units/yr</th><th>Price (ROI)</th><th>≈ NI price (£)</th><th>Gap vs floor</th><th>True ex-VAT</th><th>Margin (ex-VAT − floor)</th><th>Margin %</th></tr></thead>
       <tbody>
         ${products.map(p=>`
           <tr>
@@ -1241,7 +1241,7 @@ function buildFloorSummaryPanel(){
       </tbody>
     </table>
     </div>
-    <div class="note">"≈ NI price" is the ROI price converted at the rate above — a currency reference only; actual NI prices should be set to the NI market (see Step A), not just converted. "Gap vs floor" compares the entered price directly to the cost floor; "Margin (ex-VAT − floor)" strips VAT out first, so for VAT-inclusive or standard-rated products it's the truer test of whether the price clears the floor.</div>
+    <div class="note">"≈ NI price" is the ROI price converted at the rate above — a currency reference only; actual NI prices should be set to the NI market (see Step A), not just converted. "Gap vs floor" compares the entered price directly to the cost floor; "Margin (ex-VAT − floor)" strips VAT out first, so for VAT-inclusive or standard-rated services it's the truer test of whether the price clears the floor.</div>
   </div>`;
 }
 
@@ -1250,10 +1250,10 @@ function buildFinalPriceSummaryPanel(){
   <div class="card">
     <div class="toolbar"><button onclick="window.print()">Print / save as PDF</button></div>
     <h2>Final price summary</h2>
-    <p class="sub">Brings together each product's cost floor, current price, the competitor evidence from the Competitors tab, and your reprice decision — to land a final price for ROI and NI. Final price = your proposed price where you've decided to reprice, otherwise the current price.</p>
+    <p class="sub">Brings together each service's cost floor, current price, the competitor evidence from the Competitors tab, and your reprice decision — to land a final price for ROI and NI. Final price = your proposed price where you've decided to reprice, otherwise the current price.</p>
     <div class="summary-table">
     <table>
-      <thead><tr><th>Product</th><th>Market</th><th>Cost floor</th><th>Current price</th><th>Competitor range</th><th>Going rate</th><th>Value position</th><th>Decision</th><th>Final price</th><th>Margin @ final</th><th>Status</th></tr></thead>
+      <thead><tr><th>Service</th><th>Market</th><th>Cost floor</th><th>Current price</th><th>Competitor range</th><th>Going rate</th><th>Value position</th><th>Decision</th><th>Final price</th><th>Margin @ final</th><th>Status</th></tr></thead>
       <tbody>
         ${products.map(p=>['ni','roi'].map(mkt=>`
           <tr${mkt==='roi'?' style="border-bottom:2px solid var(--line);"':''}>
@@ -1272,14 +1272,14 @@ function buildFinalPriceSummaryPanel(){
       </tbody>
     </table>
     </div>
-    <div class="note">ROI margin strips VAT out of the price using each product's basis and rate, then compares to the cost floor. NI margin is indicative — it compares the NI price to the same (euro) cost floor, so confirm the real NI cost base and VAT separately. "Value position" is the differentiation you recorded on the Competitors tab — the third leg alongside cost and competitors. "Status" is the Agreed/Draft sign-off from each product's own tab.</div>
+    <div class="note">ROI margin strips VAT out of the price using each service's basis and rate, then compares to the cost floor. NI margin is indicative — it compares the NI price to the same (euro) cost floor, so confirm the real NI cost base and VAT separately. "Value position" is the differentiation you recorded on the Competitors tab — the third leg alongside cost and competitors. "Status" is the Agreed/Draft sign-off from each service's own tab.</div>
   </div>
   <div class="card">
     <h2>Impact of the decision — price × volume (ROI)</h2>
     <p class="sub">A price change only pays off if the volume holds. Using your ROI units/year and ex-VAT contribution (price − direct cost), this shows what each final price does to the whole, not just per unit. "Volume headroom" is how much sales volume you could lose at the new price and still match today's total contribution — for a price cut it flips to the volume growth you'd need just to stand still.</p>
     <div class="summary-table">
     <table>
-      <thead><tr><th>Product</th><th>Units/yr</th><th>Contribution/unit now</th><th>Annual contribution now</th><th>Final price</th><th>Contribution/unit @ final</th><th>Annual contribution @ final</th><th>Change</th><th>Volume headroom</th></tr></thead>
+      <thead><tr><th>Service</th><th>Units/yr</th><th>Contribution/unit now</th><th>Annual contribution now</th><th>Final price</th><th>Contribution/unit @ final</th><th>Annual contribution @ final</th><th>Change</th><th>Volume headroom</th></tr></thead>
       <tbody>
         ${products.map(p=>`
           <tr>
@@ -1374,7 +1374,7 @@ function buildPipelinePanel(){
     <div class="note">Picking a stage sets a sensible default probability (Lead 10% → Contacted 25% → Qualified 50% → Proposal 75% → Won 100%); adjust the % if your read differs. All five routes suit named prospects here — a nursing-home group, a GP practice, a patient-group contract. If a route is really volume-through-channels rather than named deals, plan it on the Forecast tab instead.</div>
     <div class="summary-table">
     <table id="pipeline-table" style="${pipeline.length?'':'display:none;'}">
-      <thead><tr><th>Product / service</th><th>Prospect</th><th>Source</th><th>Stage</th><th>Value (€)</th><th>Prob %</th><th>Weighted (€)</th><th>Close</th><th>Next step</th><th>Owner</th><th>Market</th><th></th></tr></thead>
+      <thead><tr><th>Service</th><th>Prospect</th><th>Source</th><th>Stage</th><th>Value (€)</th><th>Prob %</th><th>Weighted (€)</th><th>Close</th><th>Next step</th><th>Owner</th><th>Market</th><th></th></tr></thead>
       <tbody id="pipeline-rows">${pipeline.map(pipelineRowHTML).join('')}</tbody>
     </table>
     </div>
@@ -1383,9 +1383,9 @@ function buildPipelinePanel(){
   </div>
   <div class="card">
     <h2>Pipeline summary</h2>
-    <p class="sub">Total and weighted value per product. "Weighted" is the realistic expected value across the pipeline — the number worth planning against.</p>
+    <p class="sub">Total and weighted value per service. "Weighted" is the realistic expected value across the pipeline — the number worth planning against.</p>
     <table>
-      <thead><tr><th>Product / service</th><th style="text-align:right;">Prospects</th><th style="text-align:right;">Total value</th><th style="text-align:right;">Weighted (expected)</th></tr></thead>
+      <thead><tr><th>Service</th><th style="text-align:right;">Prospects</th><th style="text-align:right;">Total value</th><th style="text-align:right;">Weighted (expected)</th></tr></thead>
       <tbody>${summaryRows}</tbody>
       <tfoot><tr style="font-weight:700;"><td>Total</td><td id="pipe-sum-total-count" style="text-align:right;"></td><td id="pipe-sum-total-value" style="text-align:right;"></td><td id="pipe-sum-total-weighted" style="text-align:right;"></td></tr></tfoot>
     </table>
@@ -1456,7 +1456,7 @@ function buildForecastPanel(){
   <div class="card">
     <div class="toolbar"><button onclick="window.print()">Print / save as PDF</button></div>
     <h2>Objective 2 — 12-month forecast</h2>
-    <p class="sub">Revenue and contribution over the next 12 months (M1–M12), built from each product's final ROI price (ex-VAT) and the monthly volumes you plan. Set volumes directly, or use the lead → conversion funnel underneath as a sanity check on whether the plan is reachable. The company roll-up at the bottom shows monthly and cumulative surplus after fixed overhead.</p>
+    <p class="sub">Revenue and contribution over the next 12 months (M1–M12), built from each service's final ROI price (ex-VAT) and the monthly volumes you plan. Set volumes directly, or use the lead → conversion funnel underneath as a sanity check on whether the plan is reachable. The company roll-up at the bottom shows monthly and cumulative surplus after fixed overhead.</p>
     <div class="note" style="border-left-color:var(--amber);">Nothing showing? Click <strong>Load example figures</strong> to fill this tab (and the pathway and pipeline) with sample numbers so you can see it working — then type your own over them. <div style="margin-top:8px;"><button type="button" class="load-btn" data-action="loadexample">Load example figures</button></div></div>
     <div id="fc-headline"></div>
   </div>`;
@@ -1506,8 +1506,8 @@ function buildForecastPanel(){
   });
   html += `
   <div class="card">
-    <h2>Company forecast — all products</h2>
-    <p class="sub">Monthly totals across every product, then the surplus after fixed overhead (the overhead pool excluding the direct-labour already netted out of each contribution), and the running cumulative position — the answer to "does the plan cover the business?".</p>
+    <h2>Company forecast — all services</h2>
+    <p class="sub">Monthly totals across every service, then the surplus after fixed overhead (the overhead pool excluding the direct-labour already netted out of each contribution), and the running cumulative position — the answer to "does the plan cover the business?".</p>
     <div class="summary-table">
     <table>
       <thead><tr><th></th>${monthTh}<th style="text-align:right;">Total</th></tr></thead>
@@ -1528,11 +1528,11 @@ function buildForecastPanel(){
 function buildVATPanel(){
   return `
   <div class="card">
-    <h2>VAT reconciliation — the ex/inc-VAT split per product</h2>
-    <p class="sub">If a price is quoted inc-VAT, dividing by (1 + the VAT rate) gives the true ex-VAT figure; the difference is VAT to collect on top, not to absorb into margin. Each product's price, basis and VAT rate are set on its own tab. Exempt products (0%) show no VAT split.</p>
+    <h2>VAT reconciliation — the ex/inc-VAT split per service</h2>
+    <p class="sub">If a price is quoted inc-VAT, dividing by (1 + the VAT rate) gives the true ex-VAT figure; the difference is VAT to collect on top, not to absorb into margin. Each service's price, basis and VAT rate are set on its own tab. Exempt services (0%) show no VAT split.</p>
     <div class="summary-table">
     <table>
-      <thead><tr><th>Product</th><th>Price charged</th><th>Basis</th><th>VAT rate</th><th>True ex-VAT</th><th>VAT</th><th>Price should be (inc-VAT)</th><th>Margin (ex-VAT − floor)</th><th>Margin %</th></tr></thead>
+      <thead><tr><th>Service</th><th>Price charged</th><th>Basis</th><th>VAT rate</th><th>True ex-VAT</th><th>VAT</th><th>Price should be (inc-VAT)</th><th>Margin (ex-VAT − floor)</th><th>Margin %</th></tr></thead>
       <tbody>
         ${products.map(p=>`
           <tr>
@@ -1549,7 +1549,7 @@ function buildVATPanel(){
       </tbody>
     </table>
     </div>
-    <div class="note">All five routes are seeded here at the ROI standard rate (23%) as a starting assumption — confirm with your accountant whether adapted physical activity / exercise-therapy sessions qualify for the medical or paramedical VAT exemption. If a route is exempt, that means no VAT to add or reclaim on those sales, but usually also that you can't reclaim VAT on related costs — different from zero-rated. Change any product's rate above once you've confirmed treatment.</div>
+    <div class="note">All five routes are seeded here at the ROI standard rate (23%) as a starting assumption — confirm with your accountant whether adapted physical activity / exercise-therapy sessions qualify for the medical or paramedical VAT exemption. If a route is exempt, that means no VAT to add or reclaim on those sales, but usually also that you can't reclaim VAT on related costs — different from zero-rated. Change any service's rate above once you've confirmed treatment.</div>
   </div>`;
 }
 
@@ -1557,9 +1557,9 @@ function buildCheckPanel(){
   return `
   <div class="card">
     <h2>Cross-check: does every line add back?</h2>
-    <p class="sub">Each overhead line's shares across all products should add back to the whole-organisation total — so nothing is missed or counted twice.</p>
+    <p class="sub">Each overhead line's shares across all services should add back to the whole-organisation total — so nothing is missed or counted twice.</p>
     <table>
-      <thead><tr><th>Overhead line</th><th>Whole-org €</th><th>Allocated across products</th><th>Remaining</th><th>Status</th></tr></thead>
+      <thead><tr><th>Overhead line</th><th>Whole-org €</th><th>Allocated across services</th><th>Remaining</th><th>Status</th></tr></thead>
       <tbody>
         ${OVERHEAD_LINES.map(l=>`
           <tr>
@@ -1579,10 +1579,10 @@ function buildSummaryPanel(){
   <div class="card">
     <div class="toolbar"><button onclick="window.print()">Print / save as PDF</button></div>
     <h2>Reconciliation — the pricing decision document</h2>
-    <p class="sub">Objective 1's deliverable in one place: cost floor, price, VAT confirmed, ex-VAT margin, the re-pricing decision and whether it's signed off. "Proposed price" is your updated price list — blank means holding at the current price. "Agreed" reflects the checkbox on each product's own tab, not just that a number's been typed in.</p>
+    <p class="sub">Objective 1's deliverable in one place: cost floor, price, VAT confirmed, ex-VAT margin, the re-pricing decision and whether it's signed off. "Proposed price" is your updated price list — blank means holding at the current price. "Agreed" reflects the checkbox on each service's own tab, not just that a number's been typed in.</p>
     <div class="summary-table">
     <table>
-      <thead><tr><th>Product</th><th>Cost floor</th><th>Current price</th><th>Basis</th><th>True ex-VAT</th><th>VAT</th><th>Price should be (inc-VAT)</th><th>Margin</th><th>Margin %</th><th>Re-price?</th><th>Proposed price</th><th>Agreed?</th></tr></thead>
+      <thead><tr><th>Service</th><th>Cost floor</th><th>Current price</th><th>Basis</th><th>True ex-VAT</th><th>VAT</th><th>Price should be (inc-VAT)</th><th>Margin</th><th>Margin %</th><th>Re-price?</th><th>Proposed price</th><th>Agreed?</th></tr></thead>
       <tbody>
         ${products.map(p=>`
           <tr>
@@ -1610,12 +1610,12 @@ function buildSummaryPanel(){
       <div class="field" style="max-width:280px;">
         <label>Aggregate exchange rate (€1 = £)</label>
         <input type="number" step="0.001" min="0" class="money-input" style="width:100%;" data-action="fxrate" value="${exchangeRate}">
-        <span class="hint">One blended EUR→GBP rate applied to every product below.</span>
+        <span class="hint">One blended EUR→GBP rate applied to every service below.</span>
       </div>
     </div>
     <div class="summary-table">
     <table>
-      <thead><tr><th>Product</th><th>ROI price (€)</th><th>≈ NI equivalent (£)</th><th>Proposed ROI (€)</th><th>≈ Proposed NI (£)</th></tr></thead>
+      <thead><tr><th>Service</th><th>ROI price (€)</th><th>≈ NI equivalent (£)</th><th>Proposed ROI (€)</th><th>≈ Proposed NI (£)</th></tr></thead>
       <tbody>
         ${products.map(p=>`
           <tr>
@@ -1631,10 +1631,10 @@ function buildSummaryPanel(){
   </div>
   <div class="card">
     <h2>Portfolio roll-up — does the whole business work?</h2>
-    <p class="sub">Each product tab checks whether its own price clears its own floor. This checks something different: added together, does every product's actual annual contribution cover the whole organisation's overhead? Based on ROI prices and volumes only — NI isn't rolled in until there's a real volume behind it.</p>
+    <p class="sub">Each service tab checks whether its own price clears its own floor. This checks something different: added together, does every service's actual annual contribution cover the whole organisation's overhead? Based on ROI prices and volumes only — NI isn't rolled in until there's a real volume behind it.</p>
     <table>
       <thead><tr>
-        <th>Product</th><th>Units/yr</th><th>Contribution/sale</th><th>Annual contribution</th><th>Overhead share (annual)</th><th>Covers its own overhead?</th>
+        <th>Service</th><th>Units/yr</th><th>Contribution/sale</th><th>Annual contribution</th><th>Overhead share (annual)</th><th>Covers its own overhead?</th>
       </tr></thead>
       <tbody>
         ${products.map(p=>`
@@ -1660,12 +1660,12 @@ function buildSummaryPanel(){
     <div id="pf-headline" style="margin-top:14px;"></div>
   </div>
   <div class="card">
-    <h2>Summary — all products</h2>
+    <h2>Summary — all services</h2>
     <p class="sub">One-look recap for the OR3 conversation.</p>
     <div class="summary-table">
     <table>
       <thead><tr>
-        <th>Product</th><th>Direct/unit</th><th>Overhead/unit</th><th>Cost floor</th>
+        <th>Service</th><th>Direct/unit</th><th>Overhead/unit</th><th>Cost floor</th>
         <th>Price (ROI)</th><th>Gap vs floor</th><th>Contribution</th>
         <th>Break-even (units)</th><th>Profit-target units</th><th>Units/yr</th><th>Vs break-even</th>
       </tr></thead>
@@ -1816,7 +1816,7 @@ function buildObjectivePanel(){
       <tbody>
         <tr><td>1</td><td><strong>Overhead</strong></td><td>Put in your real yearly running costs once — rent, wages, insurance, your own time. These are the costs that exist whether or not you make a sale.</td></tr>
         <tr><td>2</td><td><strong>Each route</strong> (Nursing Homes, Patient Groups…)</td><td>Say how much of each overhead that route uses, add its hands-on cost and how many you deliver a year, and enter its price. The tool works out the lowest price that covers its costs (its "cost floor").</td></tr>
-        <tr><td>3</td><td><strong>Cost floor summary</strong></td><td>See every product's floor, price and margin side by side — one quick health-check.</td></tr>
+        <tr><td>3</td><td><strong>Cost floor summary</strong></td><td>See every service's floor, price and margin side by side — one quick health-check.</td></tr>
         <tr><td>4</td><td><strong>Competitors</strong></td><td>Note who you compete with and what they charge, North and South. Say where you sit versus them (premium / at market / below) and decide whether to change your price.</td></tr>
         <tr><td>5</td><td><strong>Final price summary</strong></td><td>Your pricing decision in one place, per market — and what each change does to the whole business, not just per sale.</td></tr>
         <tr><td>6</td><td><strong>Forecast</strong></td><td>Plan how many you'll sell each month and see a 12-month picture of income and surplus for the whole organisation.</td></tr>
@@ -1835,8 +1835,8 @@ function buildObjectivePanel(){
       <tbody>
         <tr><td style="font-weight:700; white-space:nowrap;">Cost floor</td><td>The lowest price that still covers what it costs you to deliver one — its hands-on cost plus its share of the overheads. Sell below this and you lose money on every one.</td></tr>
         <tr><td style="font-weight:700; white-space:nowrap;">Direct cost</td><td>What one sale directly costs you — the therapist/facilitator time to deliver it, plus any materials. It goes up and down with how many you sell.</td></tr>
-        <tr><td style="font-weight:700; white-space:nowrap;">Overhead</td><td>The running costs of the whole organisation (rent, insurance, admin, your time) that you pay whether or not you make a sale. Shared out across the products.</td></tr>
-        <tr><td style="font-weight:700; white-space:nowrap;">Allocation (%)</td><td>How much of each overhead line you decide a product should carry — its fair share.</td></tr>
+        <tr><td style="font-weight:700; white-space:nowrap;">Overhead</td><td>The running costs of the whole organisation (rent, insurance, admin, your time) that you pay whether or not you make a sale. Shared out across the services.</td></tr>
+        <tr><td style="font-weight:700; white-space:nowrap;">Allocation (%)</td><td>How much of each overhead line you decide a service should carry — its fair share.</td></tr>
         <tr><td style="font-weight:700; white-space:nowrap;">Contribution</td><td>The price of one sale minus its direct cost. It's what each sale "contributes" toward paying the overheads.</td></tr>
         <tr><td style="font-weight:700; white-space:nowrap;">Break-even</td><td>How many you need to sell so the total contribution covers the overhead. Below it you're at a loss; above it you're in surplus.</td></tr>
         <tr><td style="font-weight:700; white-space:nowrap;">Margin</td><td>Price minus cost floor (with VAT taken out first). The profit built into the price.</td></tr>
@@ -1964,7 +1964,7 @@ function buildStepAPanel(){
   <div class="card">
     <h2>Step A — Competitors &amp; repricing (the pricing ceiling)</h2>
     <p class="sub">For each route, capture who you compete with in ROI and in NI, what they offer and what they charge. Direct = the same thing (another adapted-physical-activity provider); indirect = a different answer to the same problem (a generic fitness class, in-house HSE staff delivery). The tool shows the price range and your own cost floor and price next to it — then you decide, per market, whether to reprice.</p>
-    <div class="note">NI figures are only as good as the market research behind them — confirm the NI route to market before treating any NI going rate as solid. The ROI decision here is the same one shown on the product's own tab and the reconciliation summary.</div>
+    <div class="note">NI figures are only as good as the market research behind them — confirm the NI route to market before treating any NI going rate as solid. The ROI decision here is the same one shown on the service's own tab and the reconciliation summary.</div>
   </div>`;
   products.forEach(p=>{
     html += `
@@ -1996,7 +1996,7 @@ function buildStepBPanel(){
     <h2>Step B — Markets and value proposition</h2>
     <p class="sub">For each route: the market segments to develop, and why a buyer chooses Siel Bleu over the direct and indirect alternatives — what justifies the price. This is where price moves from cost-plus to value-based.</p>
     <table>
-      <thead><tr><th>Product</th><th>Market segments to develop</th><th>Value proposition</th></tr></thead>
+      <thead><tr><th>Service</th><th>Market segments to develop</th><th>Value proposition</th></tr></thead>
       <tbody>${marketValueRowsHTML()}</tbody>
     </table>
   </div>`;
@@ -2021,10 +2021,10 @@ function buildStepCPanel(){
   return `
   <div class="card">
     <h2>Step C — Lock the pricing decision</h2>
-    <p class="sub">Bring the three inputs together for each product and market: the cost floor, the competitor going rate (Step A), and the value justification (Step B). Type a final price and the outcome column shows what it actually does — gap to floor, contribution per sale, and sales needed to break even — before you commit to it. This is the deliverable that completes SMART Objective 1.</p>
+    <p class="sub">Bring the three inputs together for each service and market: the cost floor, the competitor going rate (Step A), and the value justification (Step B). Type a final price and the outcome column shows what it actually does — gap to floor, contribution per sale, and sales needed to break even — before you commit to it. This is the deliverable that completes SMART Objective 1.</p>
     <div class="note">For the NI rows: a price is only a decision once the NI route to market is confirmed — otherwise it's a placeholder, not a commitment.</div>
     <table>
-      <thead><tr><th>Product</th><th>Market</th><th>Reference</th><th>Final price</th><th>Outcome at this price</th><th>Reason (one line)</th></tr></thead>
+      <thead><tr><th>Service</th><th>Market</th><th>Reference</th><th>Final price</th><th>Outcome at this price</th><th>Reason (one line)</th></tr></thead>
       <tbody>${finalPricingRowsHTML()}</tbody>
     </table>
   </div>`;
@@ -2044,7 +2044,7 @@ function buildChecklistPanel(){
     <h2>SMART Objective 1 — completion checklist</h2>
     <p class="sub">Complete when all four are ticked for each of the five routes, by end of M4 (September 2026).</p>
     <table>
-      <thead><tr><th>Product</th>${CHECKLIST_ITEMS.map(i=>`<th>${i.label}</th>`).join('')}</tr></thead>
+      <thead><tr><th>Service</th>${CHECKLIST_ITEMS.map(i=>`<th>${i.label}</th>`).join('')}</tr></thead>
       <tbody>${checklistRowsHTML()}</tbody>
     </table>
   </div>`;
@@ -2054,7 +2054,7 @@ const CRM_STATIC = {market:"\n  <div class=\"page-head\"><div><h2>Market & Growt
 accounts:"\n  <div class=\"page-head\"><div><h2>Accounts & Contacts</h2><p>A genuine CRM record—not merely a list of prospects.</p></div><span class=\"tag\">CRM core</span></div>\n  <div class=\"split\">\n    <div class=\"card\"><h3 class=\"section-title\">Account list</h3><table><thead><tr><th>Account</th><th>Type</th><th>Geography</th><th>Potential</th><th>Relationship</th><th>Next action</th><th>Owner</th></tr></thead><tbody>\n      <tr><td><b>Harbour Care Group</b><br><small>6 sites</small></td><td>Nursing-home group</td><td>Dublin / Meath</td><td>€51,840</td><td><span class=\"pill green\">Warm</span></td><td>Discovery 18 Jul</td><td>Thomas</td></tr>\n      <tr><td><b>Oak Medical Practice</b></td><td>GP / referrer</td><td>Dublin 9</td><td>120 referrals</td><td><span class=\"pill amber\">Developing</span></td><td>Send pathway pack</td><td>Aisling</td></tr>\n      <tr><td><b>Active Age Border Network</b></td><td>Patient group</td><td>Louth / Down</td><td>NI validation</td><td><span class=\"pill accent\">Existing relationship</span></td><td>Arrange NI interview</td><td>Thomas</td></tr>\n      <tr><td><b>St Brigid’s Hospital</b></td><td>Hospital</td><td>Cork</td><td>€24,000</td><td><span class=\"pill\">Cold</span></td><td>Identify decision maker</td><td>Unassigned</td></tr>\n    </tbody></table></div>\n    <div class=\"card\"><h3 class=\"section-title\">Account 360°</h3><b>Harbour Care Group</b><p class=\"helper\">Parent account with six service locations</p><table><tbody><tr><td>Account tier</td><td><b>A — strategic</b></td></tr><tr><td>Primary contact</td><td>Director of Care</td></tr><tr><td>Current services</td><td>2 sites / 96 sessions</td></tr><tr><td>Whitespace</td><td>4 sites / €34,560</td></tr><tr><td>Open pipeline</td><td>€25,920</td></tr><tr><td>Renewal date</td><td>30 Nov 2026</td></tr><tr><td>Last activity</td><td>Call 10 Jul</td></tr><tr><td>Next best action</td><td><b>Group-wide proposal</b></td></tr></tbody></table><button class=\"btn primary\" style=\"margin-top:12px\">Open full account</button></div>\n  </div>\n  <div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Mandatory account data</h3><div class=\"checks\"><div class=\"check\">Account hierarchy: group, site, practice, hospital or individual</div><div class=\"check\">Buyer, influencer, referrer and service contact roles</div><div class=\"check\">Route, geography, 65+ persona and need</div><div class=\"check\">Current contract, historic revenue and session history</div><div class=\"check\">Potential annual value and whitespace</div><div class=\"check\">Consent, communication preferences and GDPR basis</div><div class=\"check\">Relationship strength and last meaningful interaction</div><div class=\"check\">Named owner, next action and due date</div></div></div>\n",
 contracts:"\n  <div class=\"page-head\"><div><h2>Contracts, Onboarding & Renewals</h2><p>Close the loop between sales and actual recurring income.</p></div><span class=\"tag\">Revenue operations</span></div>\n  <div class=\"grid kpis\"><div class=\"card kpi\"><div class=\"label\">Active contracts</div><div class=\"value\">86</div><div class=\"delta\">Across 64 accounts</div></div><div class=\"card kpi\"><div class=\"label\">Contracted annual value</div><div class=\"value\">€1.12m</div><div class=\"delta\">Excludes HSE</div></div><div class=\"card kpi\"><div class=\"label\">Renewals next 90 days</div><div class=\"value\">9</div><div class=\"delta warn\">€146k at review</div></div><div class=\"card kpi\"><div class=\"label\">At-risk value</div><div class=\"value\">€32k</div><div class=\"delta bad\">Service / buyer issues</div></div><div class=\"card kpi\"><div class=\"label\">Expansion whitespace</div><div class=\"value\">€208k</div><div class=\"delta\">Existing account sites</div></div><div class=\"card kpi\"><div class=\"label\">Revenue concentration</div><div class=\"value\">60%</div><div class=\"delta warn\">HSE watching brief</div></div></div>\n  <div class=\"grid two\"><div class=\"card\"><h3 class=\"section-title\">Won-to-live workflow</h3><div class=\"flow\"><div class=\"step done\">Opportunity won</div><span class=\"arrow\">→</span><div class=\"step active\">Contract signed</div><span class=\"arrow\">→</span><div class=\"step\">Capacity allocated</div><span class=\"arrow\">→</span><div class=\"step\">Delivery schedule</div><span class=\"arrow\">→</span><div class=\"step\">Service live</div><span class=\"arrow\">→</span><div class=\"step\">Invoice / actual revenue</div></div><div class=\"callout\">The engine should distinguish <b>forecast revenue</b>, <b>contracted revenue</b>, <b>scheduled delivery</b> and <b>actual revenue</b>.</div></div><div class=\"card\"><h3 class=\"section-title\">Renewal health</h3><table><thead><tr><th>Account</th><th>Renewal</th><th>Value</th><th>Health</th><th>Action</th></tr></thead><tbody><tr><td>Harbour Care</td><td>30 Nov</td><td>€17,280</td><td><span class=\"pill green\">Healthy</span></td><td>Expansion proposal</td></tr><tr><td>St Anne’s Group</td><td>18 Sep</td><td>€28,800</td><td><span class=\"pill red\">At risk</span></td><td>Executive call</td></tr><tr><td>Active Age East</td><td>05 Oct</td><td>€10,200</td><td><span class=\"pill amber\">Watch</span></td><td>Impact report</td></tr></tbody></table></div></div>\n",
 board:"\n  <div class=\"page-head\"><div><h2>Board Growth Plan & Reporting</h2><p>A sign-off view that traces every headline number back to evidence.</p></div><span class=\"tag\">Board governance</span></div>\n  <div class=\"grid two\"><div class=\"card\"><h3 class=\"section-title\">Board scorecard</h3><table><thead><tr><th>Measure</th><th>Plan</th><th>Forecast</th><th>Actual</th><th>Status</th><th>Comment</th></tr></thead><tbody><tr><td>Total income growth</td><td>€2.00m</td><td>€1.46m</td><td>€310k YTD</td><td><span class=\"pill amber\">Behind</span></td><td>Pipeline coverage insufficient</td></tr><tr><td>Nursing-home growth</td><td>€1.05m</td><td>€820k</td><td>€180k</td><td><span class=\"pill green\">On track</span></td><td>Prioritise group accounts</td></tr><tr><td>One-to-one growth</td><td>€500k</td><td>€315k</td><td>€72k</td><td><span class=\"pill red\">At risk</span></td><td>Referral and capacity constraints</td></tr><tr><td>Contribution</td><td>Target %</td><td>49.0%</td><td>47.3%</td><td><span class=\"pill amber\">Review</span></td><td>1:1 price / cost pressure</td></tr><tr><td>Workforce trajectory</td><td>38 → 85</td><td>85 required</td><td>38 active</td><td><span class=\"pill red\">Gap</span></td><td>Recruitment trigger active</td></tr><tr><td>NI validation</td><td>Gate by M7</td><td>Stage 1</td><td>0/2 prospects</td><td><span class=\"pill amber\">Open</span></td><td>No committed forecast yet</td></tr></tbody></table></div><div class=\"card\"><h3 class=\"section-title\">Decisions required</h3><div class=\"alert\"><span class=\"dot bad\"></span><div><b>Approve route mix or extend target timing.</b><br><small>Current bottom-up forecast does not yet close the €2m gap.</small></div></div><div class=\"alert\"><span class=\"dot\"></span><div><b>Decide one-to-one margin position.</b><br><small>Price, travel model or delivery design must change.</small></div></div><div class=\"alert\"><span class=\"dot\"></span><div><b>Approve recruitment ahead of won contracts?</b><br><small>Choose risk appetite and capacity trigger.</small></div></div><div class=\"alert\"><span class=\"dot good\"></span><div><b>Retain HSE as a watching brief.</b><br><small>Show concentration and renewal date without letting it drive SO1.</small></div></div></div></div>\n  <div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Audit trail behind each board number</h3><div class=\"schema\"><div class=\"entity\"><b>Board target</b><span>approved plan/version</span></div><span>→</span><div class=\"entity\"><b>Market assumptions</b><span>source + confidence</span></div><span>→</span><div class=\"entity\"><b>Route volumes</b><span>required sales</span></div><span>→</span><div class=\"entity\"><b>Opportunities</b><span>named pipeline</span></div><span>→</span><div class=\"entity\"><b>Contracts</b><span>committed value</span></div><span>→</span><div class=\"entity\"><b>Delivery & actuals</b><span>realised income</span></div></div></div>\n",
-blueprint:"\n  <div class=\"page-head\"><div><h2>System Blueprint</h2><p>Minimum data architecture and automations needed for a robust CRM.</p></div><span class=\"tag\">Developer handoff</span></div>\n  <div class=\"card\"><h3 class=\"section-title\">Core data model</h3><div class=\"schema\"><div class=\"entity\"><b>Market / Geography</b><span>ROI, NI, catchments</span></div><span>→</span><div class=\"entity\"><b>Account</b><span>group, site, referrer, buyer</span></div><span>→</span><div class=\"entity\"><b>Contact</b><span>role + influence</span></div><span>→</span><div class=\"entity\"><b>Lead / Referral</b><span>source + consent</span></div><span>→</span><div class=\"entity\"><b>Opportunity</b><span>route, value, volume</span></div><span>→</span><div class=\"entity\"><b>Quote</b><span>price + margin approval</span></div><span>→</span><div class=\"entity\"><b>Contract</b><span>term + renewal</span></div><span>→</span><div class=\"entity\"><b>Delivery</b><span>sessions + capacity</span></div><span>→</span><div class=\"entity\"><b>Revenue actual</b><span>invoice / received</span></div></div><div class=\"schema\" style=\"margin-top:12px\"><div class=\"entity\"><b>Product / route</b><span>NH, 1:1, groups, online</span></div><span>↔</span><div class=\"entity\"><b>Price book</b><span>cost, margin, EUR/GBP</span></div><span>↔</span><div class=\"entity\"><b>Campaign</b><span>activity + attribution</span></div><span>↔</span><div class=\"entity\"><b>Trainer / capacity</b><span>skills, radius, hours</span></div><span>↔</span><div class=\"entity\"><b>Assumption / evidence</b><span>source, confidence, review</span></div></div></div>\n  <div class=\"grid two\" style=\"margin-top:12px\"><div class=\"card\"><h3 class=\"section-title\">Required automations</h3><div class=\"checks\"><div class=\"check\">Calculate annual value, direct contribution and full-cost surplus</div><div class=\"check\">Block quote issue below minimum margin unless approved</div><div class=\"check\">Create next-action task when pipeline stage changes</div><div class=\"check\">Flag opportunities with no activity or overdue close date</div><div class=\"check\">Compare forecast volume with capacity by route and geography</div><div class=\"check\">Trigger recruitment workflow when capacity threshold is reached</div><div class=\"check\">Create contract, onboarding and renewal from closed-won</div><div class=\"check\">Exclude unvalidated NI opportunities from committed forecast</div><div class=\"check\">Update board scorecard from pipeline, contracts and actuals</div><div class=\"check\">Create data-quality alerts for incomplete mandatory fields</div></div></div><div class=\"card\"><h3 class=\"section-title\">Role-based access</h3><table><thead><tr><th>Role</th><th>Can see</th><th>Can change</th></tr></thead><tbody><tr><td>Thomas / Commercial Lead</td><td>All commercial data</td><td>Targets, pipeline, prices, approvals</td></tr><tr><td>Marketing</td><td>Campaigns, leads, route funnels</td><td>Activities, leads, attribution</td></tr><tr><td>Operations</td><td>Won pipeline, contracts, capacity</td><td>Delivery and trainer allocation</td></tr><tr><td>Finance</td><td>Prices, contracts, actual revenue</td><td>Costs, actuals, reconciliations</td></tr><tr><td>Board</td><td>Scorecard and decisions</td><td>Approvals / plan version only</td></tr><tr><td>Advisor</td><td>Selected plan / NI evidence</td><td>Comments, not source records</td></tr></tbody></table></div></div>\n  <div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Recommended first-build stack</h3><div class=\"schema\"><div class=\"entity\"><b>GitHub</b><span>source control + Codex workspace</span></div><span>→</span><div class=\"entity\"><b>Netlify</b><span>secure web app deployment</span></div><span>↔</span><div class=\"entity\"><b>Airtable</b><span>CRM data + operating tables</span></div><span>→</span><div class=\"entity\"><b>Codex + ChatGPT</b><span>build, test and product control</span></div></div></div><div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Recommended build sequence</h3><div class=\"flow\"><div class=\"step active\">MVP 1<br><b>Targets + CRM + pipeline</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 2<br><b>Pricing + quotes</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 3<br><b>Volume + capacity</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 4<br><b>Contracts + actuals</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 5<br><b>NI gate + board pack</b></div></div><div class=\"callout\"><b>Non-negotiable design principle:</b> do not build separate “pricing”, “CRM” and “forecast” tools. Use one record structure so a price decision flows into an opportunity, required volume, capacity, contract and actual income.</div></div>\n"};
+blueprint:"\n  <div class=\"page-head\"><div><h2>System Blueprint</h2><p>Minimum data architecture and automations needed for a robust CRM.</p></div><span class=\"tag\">Developer handoff</span></div>\n  <div class=\"card\"><h3 class=\"section-title\">Core data model</h3><div class=\"schema\"><div class=\"entity\"><b>Market / Geography</b><span>ROI, NI, catchments</span></div><span>→</span><div class=\"entity\"><b>Account</b><span>group, site, referrer, buyer</span></div><span>→</span><div class=\"entity\"><b>Contact</b><span>role + influence</span></div><span>→</span><div class=\"entity\"><b>Lead / Referral</b><span>source + consent</span></div><span>→</span><div class=\"entity\"><b>Opportunity</b><span>route, value, volume</span></div><span>→</span><div class=\"entity\"><b>Quote</b><span>price + margin approval</span></div><span>→</span><div class=\"entity\"><b>Contract</b><span>term + renewal</span></div><span>→</span><div class=\"entity\"><b>Delivery</b><span>sessions + capacity</span></div><span>→</span><div class=\"entity\"><b>Revenue actual</b><span>invoice / received</span></div></div><div class=\"schema\" style=\"margin-top:12px\"><div class=\"entity\"><b>Service / route</b><span>NH, 1:1, groups, online</span></div><span>↔</span><div class=\"entity\"><b>Price book</b><span>cost, margin, EUR/GBP</span></div><span>↔</span><div class=\"entity\"><b>Campaign</b><span>activity + attribution</span></div><span>↔</span><div class=\"entity\"><b>Trainer / capacity</b><span>skills, radius, hours</span></div><span>↔</span><div class=\"entity\"><b>Assumption / evidence</b><span>source, confidence, review</span></div></div></div>\n  <div class=\"grid two\" style=\"margin-top:12px\"><div class=\"card\"><h3 class=\"section-title\">Required automations</h3><div class=\"checks\"><div class=\"check\">Calculate annual value, direct contribution and full-cost surplus</div><div class=\"check\">Block quote issue below minimum margin unless approved</div><div class=\"check\">Create next-action task when pipeline stage changes</div><div class=\"check\">Flag opportunities with no activity or overdue close date</div><div class=\"check\">Compare forecast volume with capacity by route and geography</div><div class=\"check\">Trigger recruitment workflow when capacity threshold is reached</div><div class=\"check\">Create contract, onboarding and renewal from closed-won</div><div class=\"check\">Exclude unvalidated NI opportunities from committed forecast</div><div class=\"check\">Update board scorecard from pipeline, contracts and actuals</div><div class=\"check\">Create data-quality alerts for incomplete mandatory fields</div></div></div><div class=\"card\"><h3 class=\"section-title\">Role-based access</h3><table><thead><tr><th>Role</th><th>Can see</th><th>Can change</th></tr></thead><tbody><tr><td>Thomas / Commercial Lead</td><td>All commercial data</td><td>Targets, pipeline, prices, approvals</td></tr><tr><td>Marketing</td><td>Campaigns, leads, route funnels</td><td>Activities, leads, attribution</td></tr><tr><td>Operations</td><td>Won pipeline, contracts, capacity</td><td>Delivery and trainer allocation</td></tr><tr><td>Finance</td><td>Prices, contracts, actual revenue</td><td>Costs, actuals, reconciliations</td></tr><tr><td>Board</td><td>Scorecard and decisions</td><td>Approvals / plan version only</td></tr><tr><td>Advisor</td><td>Selected plan / NI evidence</td><td>Comments, not source records</td></tr></tbody></table></div></div>\n  <div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Recommended first-build stack</h3><div class=\"schema\"><div class=\"entity\"><b>GitHub</b><span>source control + Codex workspace</span></div><span>→</span><div class=\"entity\"><b>Netlify</b><span>secure web app deployment</span></div><span>↔</span><div class=\"entity\"><b>Airtable</b><span>CRM data + operating tables</span></div><span>→</span><div class=\"entity\"><b>Codex + ChatGPT</b><span>build, test and version control</span></div></div></div><div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Recommended build sequence</h3><div class=\"flow\"><div class=\"step active\">MVP 1<br><b>Targets + CRM + pipeline</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 2<br><b>Pricing + quotes</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 3<br><b>Volume + capacity</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 4<br><b>Contracts + actuals</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 5<br><b>NI gate + board pack</b></div></div><div class=\"callout\"><b>Non-negotiable design principle:</b> do not build separate “pricing”, “CRM” and “forecast” tools. Use one record structure so a price decision flows into an opportunity, required volume, capacity, contract and actual income.</div></div>\n"};
 const CRM_NOTICE = "<div class=\"notice\"><b>Illustrative section below:</b> the sample tables and wireframes that follow show the target design — the registers and figures above them are live and save automatically.</div>";
 
 function buildSO1TrackerCard(){
@@ -2543,14 +2543,14 @@ function updateAll(){
   const pfHeadlineEl = document.getElementById('pf-headline');
   if(pfHeadlineEl){
     let msg = pfSurplus>=0
-      ? `Across all ${products.length} products, at current ROI prices and volumes, the portfolio generates ${gbp(totalContribution,2)} in contribution against ${gbp(totalOverheadShare,2)} of overhead — a surplus of ${gbp(pfSurplus,2)}.`
-      : `Across all ${products.length} products, at current ROI prices and volumes, the portfolio generates ${gbp(totalContribution,2)} in contribution against ${gbp(totalOverheadShare,2)} of overhead — a shortfall of ${gbp(Math.abs(pfSurplus),2)}.`;
+      ? `Across all ${products.length} services, at current ROI prices and volumes, the portfolio generates ${gbp(totalContribution,2)} in contribution against ${gbp(totalOverheadShare,2)} of overhead — a surplus of ${gbp(pfSurplus,2)}.`
+      : `Across all ${products.length} services, at current ROI prices and volumes, the portfolio generates ${gbp(totalContribution,2)} in contribution against ${gbp(totalOverheadShare,2)} of overhead — a shortfall of ${gbp(Math.abs(pfSurplus),2)}.`;
     if(anyMissing){
-      msg += ' This total is partial — some products don\'t have a price and units/year entered yet, so their contribution isn\'t counted.';
+      msg += ' This total is partial — some services don\'t have a price and units/year entered yet, so their contribution isn\'t counted.';
     }
     const totalUnallocated = OVERHEAD_LINES.reduce((s,l)=> s + Math.max(0, lineRemaining[l.key]||0), 0);
     if(totalUnallocated > 0.5){
-      msg += ` Also, ${gbp(totalUnallocated,2)} of overhead hasn't been assigned to any product yet (see Cross-check) — once it is, the total overhead figure here will rise.`;
+      msg += ` Also, ${gbp(totalUnallocated,2)} of overhead hasn't been assigned to any service yet (see Cross-check) — once it is, the total overhead figure here will rise.`;
     }
     pfHeadlineEl.innerHTML = `<div class="note" style="border-left-color:${pfSurplus>=0?'var(--green)':'var(--red)'};">${msg}</div>`;
   }
@@ -2580,7 +2580,7 @@ function updateAll(){
     setText('dash-kpi-health-sub', `${priced} of ${products.length} routes priced`);
     const totalUnallocatedNow = OVERHEAD_LINES.reduce((s,l)=> s + Math.max(0, lineRemaining[l.key]||0), 0);
     if(totalUnallocatedNow > 0.5){
-      dashAttn.push({sev:'warn', goto:'overhead', text:`${gbp(totalUnallocatedNow,2)} of overhead hasn't been assigned to a product yet`});
+      dashAttn.push({sev:'warn', goto:'overhead', text:`${gbp(totalUnallocatedNow,2)} of overhead hasn't been assigned to a service yet`});
     }
     if(pfSurplus<0 && totalContribution>0){
       dashAttn.push({sev:'bad', goto:'floorsummary', text:`Portfolio-wide shortfall of ${gbp(Math.abs(pfSurplus),2)} — contribution doesn't yet cover total overhead`});
@@ -3836,7 +3836,7 @@ function downloadExcel(){
       r.breakEvenROI!==null? r.breakEvenROI: ''
     ]);
   });
-  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(prodRows), 'Products');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(prodRows), 'Services');
 
   // Portfolio roll-up
   const pfRows = [['Product','Units/yr','Contribution/sale (€)','Annual contribution (€)','Overhead share annual (€)','Covers own overhead?']];
