@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Siel Bleu Ireland — Commercial Growth Engine</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23102d3b'/%3E%3Cpath d='M7 17 Q16 26 25 15' stroke='%23fabc2b' stroke-width='3.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 :root{
@@ -200,6 +201,7 @@ body.hide-notes .note{display:none}
 <header class="topbar">
   <div class="topbar-title"><span class="topbar-kicker">SIEL BLEU IRELAND</span><h1 id="pageTitle">Command Centre</h1><div class="sub" id="save-status">Not yet saved</div></div>
   <div class="actions">
+    <button type="button" id="btn-howto" class="btn">How to use</button>
     <button type="button" id="btn-import" class="btn">Import backup</button>
     <button type="button" id="btn-excel" class="btn">Download Excel</button>
     <button type="button" id="btn-savenow" class="btn">Save now</button>
@@ -459,11 +461,11 @@ let so2ChecklistState = {};
 SO2_CHECKLIST_ITEMS.forEach(i=>{ so2ChecklistState[i.key] = false; });
 
 const SO1_ACTIONS = [
-  {key:'target', label:'Fix the target', detail:'Confirm and lock the ~€734k growth target toward €2.33m by 2030.', why:'Everything sizes off this number; growth-led, HSE on watching brief.', owner:'Thomas / Fiona', byWhen:'Post-OR2', goto:null},
+  {key:'target', label:'Fix the target', detail:'Confirm and lock the ~€2.4m growth target toward the €4m ambition by 2030.', why:'Everything sizes off this number; growth-led, HSE on watching brief.', owner:'Thomas / Fiona', byWhen:'Post-OR2', goto:null},
   {key:'sizemarket', label:'Size the market', detail:'Nursing homes (+ one-to-one) in the target geographies, 65+ population, realistic obtainable share.', why:'Confirms the target is real, bottom-up — not just a strategy number.', owner:'Thomas', byWhen:'M2 — 16 Jul', goto:null},
   {key:'routes', label:'Establish the routes', detail:'Nursing homes priority one, one-to-one via GP/HealthLink second, plus patient groups, hospital, online. Agree which carries what share.', why:'Defines where the growth comes from.', owner:'Thomas', byWhen:'M2 — 16 Jul', goto:'floorsummary'},
   {key:'priceroutes', label:'Price each route and its margin', detail:'Confirmed price points (NH €90, groups €85, one-to-one €65, online €22.50–€25/mo) and the contribution each sale makes after delivery cost.', why:'So volume is sized to the surplus, not just the top line.', owner:'Thomas', byWhen:'M2–M4', goto:'finalprice'},
-  {key:'convertvolume', label:'Convert to volume', detail:'How many sales per route per year to hit the target (e.g. €500k one-to-one ≈ 7,700 sessions/yr).', why:'Makes the target a concrete sales number.', owner:'Thomas', byWhen:'M2–M4', goto:'forecast'},
+  {key:'convertvolume', label:'Convert to volume', detail:'How many sales per route per year to hit the target (e.g. €450k one-to-one ≈ 6,900 sessions/yr).', why:'Makes the target a concrete sales number.', owner:'Thomas', byWhen:'M2–M4', goto:'forecast'},
   {key:'proposition', label:'Build the proposition & sales/marketing plan', detail:'The 65+ positioning (personas per age band incl. carer/family buyer) and the activity to deliver the volume.', why:'You cannot market without knowing who you sell to; the activity delivers the volume.', owner:'Thomas + Marketing', byWhen:'M3–M6', goto:'pathway'},
   {key:'resource', label:'Resource it', detail:'Size the workforce to the volume (38 to 85 trajectory, 50km radius) and build the recruitment and retention plan, incl. NI trainers.', why:'If the volume cannot be staffed, the plan is not real.', owner:'Thomas / board', byWhen:'M4–M5', goto:'forecast'},
   {key:'boardplan', label:'Assemble the growth plan for board review', detail:'', why:'The board sign-off that commits the plan.', owner:'Thomas / Fiona', byWhen:'M4 — Sep', goto:null}
@@ -693,7 +695,7 @@ const TABS = [
   {key:'contracts', label:'Contracts & Renewals', num:'09'},
   {key:'board', label:'Board Reporting', num:'10'},
   {key:'blueprint', label:'System Blueprint', num:'11'},
-  {key:'objective', label:'Guide & glossary', num:'12'}
+  {key:'objective', label:'How to use & glossary', num:'12'}
 ];
 
 function buildTabNav(){
@@ -1722,22 +1724,23 @@ function buildDashboardPanel(){
     <div class="card kpi"><div class="label">SO1 plan actions</div><div class="value" id="dash-kpi-actions">—</div><div class="delta" id="dash-kpi-actions-sub">Tracked in Market &amp; Targets</div></div>
   </div>
   <div class="callout" id="dash-hse-brief" style="display:none; margin:0 0 12px;"></div>
-  <div class="grid two">
-    <div class="card"><h3 class="section-title">Growth route control table</h3><div class="helper">What each route already has working (its 12-month planned income), its growth target, the volume that target implies, and the live pipeline against it — together, not in separate systems.</div>
-      <div class="summary-table"><table><thead><tr><th>Route</th><th>Priority</th><th>Price (ex-VAT)</th><th>Current income (12-mo plan)</th><th>Growth target (€/yr)</th><th>Required volume</th><th>Weighted pipeline</th><th>Margin</th></tr></thead><tbody>${routeRows}</tbody></table></div>
-      <div id="rt-note"></div>
-    </div>
-    <div class="card"><h3 class="section-title">Management exceptions</h3><div id="dash-attention" class="dash-attention"></div></div>
+  <div class="card">
+    <h3 class="section-title">Growth route control table</h3><div class="helper">What each route already has working (its 12-month planned income), its growth target, the volume that target implies, and the live pipeline against it — together, not in separate systems.</div>
+    <div class="summary-table"><table><thead><tr><th>Route</th><th>Priority</th><th>Price (ex-VAT)</th><th>Current income (12-mo plan)</th><th>Growth target (€/yr)</th><th>Required volume</th><th>Weighted pipeline</th><th>Margin</th></tr></thead><tbody>${routeRows}</tbody></table></div>
+    <div id="rt-note"></div>
   </div>
   <div class="card" style="margin-top:12px">
     <h3 class="section-title">Path to the 2030 ambition — the bridge</h3>
     <div class="helper">Current baseline, plus what each route's 12-month plan adds at the realigned price (ex-VAT), against the ambition. This is what the pricing work in section 05 and the volumes in section 06 add up to.</div>
     <div id="dash-bridge"><p class="empty-note">Set the ambition and baseline in Market &amp; Targets, then plan volumes in Volume &amp; Forecast, to see the bridge build.</p></div>
   </div>
-  <div class="card" style="margin-top:12px">
-    <h3 class="section-title">Closing the growth gap</h3>
-    <div class="helper">Three lenses on the same gap — what the 12-month plan adds, what the live pipeline is worth, and what's already contracted. They overlap (pipeline is how plan growth gets landed), so read them side by side, not added up.</div>
-    <div id="gap-close"><p class="empty-note">Set the ambition and baseline in Market &amp; Targets to see progress against the gap.</p></div>
+  <div class="grid two" style="margin-top:12px">
+    <div class="card">
+      <h3 class="section-title">Closing the growth gap</h3>
+      <div class="helper">Three lenses on the same gap — what the 12-month plan adds, what the live pipeline is worth, and what's already contracted. They overlap (pipeline is how plan growth gets landed), so read them side by side, not added up.</div>
+      <div id="gap-close"><p class="empty-note">Set the ambition and baseline in Market &amp; Targets to see progress against the gap.</p></div>
+    </div>
+    <div class="card"><h3 class="section-title">Management exceptions</h3><div id="dash-attention" class="dash-attention"></div></div>
   </div>
   <div class="card" style="margin-top:12px">
     <h3 class="section-title">Bookings needed for the ambition</h3>
@@ -1804,13 +1807,22 @@ function buildDashboardPanel(){
 function buildObjectivePanel(){
   return `
   <div class="card">
+    <h2>How to use this tool — the short version</h2>
+    <p class="sub">Three things to know. Everything else on this page is detail you can come back to.</p>
+    <div class="statgrid">
+      <div class="stat"><div class="lbl">1 — It saves itself</div><div class="exact" style="font-size:12.5px; margin-top:6px; line-height:1.5;">Every number you type saves automatically to your account. No save button needed, no way to break it — if you change something, it just recalculates everywhere.</div></div>
+      <div class="stat"><div class="lbl">2 — Start at the Command Centre</div><div class="exact" style="font-size:12.5px; margin-top:6px; line-height:1.5;">Section 01 shows where the business stands against the €4m ambition — targets, pipeline, margins, staffing. Click any tile or number to jump to where that figure comes from.</div></div>
+      <div class="stat"><div class="lbl">3 — Work the numbered sections</div><div class="exact" style="font-size:12.5px; margin-top:6px; line-height:1.5;">Your clients live in 03 · prospects in 04 · prices in 05 · volumes in 06. Change a price in 05 and watch the Command Centre move — that's the whole idea.</div></div>
+    </div>
+  </div>
+  <div class="card">
     <h2>The plan — two objectives</h2>
     <p class="sub">Revised on the board's steer: growth-led, not de-risking-led. Nursing homes is priority one — the core business and the vehicle for expansion.</p>
     <div class="note" style="font-style:italic;">
       "Grow Siel Bleu's income — led by nursing homes as the core and expansion vehicle, with one-to-one services and cross-border expansion as the growth areas — so the organisation scales toward its 2030 ambition while reducing the share any single contract represents of trading income."
     </div>
     <p style="font-size:13px; line-height:1.6;">
-      <strong>SO1 — Grow ROI income:</strong> start to grow ROI income by ~€734k toward the €2.33m 2030 ambition. ROI is the known market — costs, prices and routes are solid — so this is a full build: size the market, then the engine from target to delivery.
+      <strong>SO1 — Grow ROI income:</strong> grow ROI income by ~€2.4m toward the €4m 2030 ambition. ROI is the known market — costs, prices and routes are solid — so this is a full build: size the market, then the engine from target to delivery.
     </p>
     <p style="font-size:13px; line-height:1.6; margin-bottom:0;">
       <strong>SO2 — Expand across the border:</strong> sequenced nursing homes first, then patient groups, then existing border relationships. NI is a new, uncertain market, so it validates before it commits — test the assumptions cheaply first; pricing and volume stay provisional until the entry work has reduced the uncertainty.
@@ -2061,12 +2073,7 @@ function buildChecklistPanel(){
   </div>`;
 }
 
-const CRM_STATIC = {market:"\n  <div class=\"page-head\"><div><h2>Market & Growth Targets</h2><p>Build the €2.00m from obtainable market share rather than a top-down strategy number.</p></div><span class=\"tag\">SO1 actions 1–3</span></div>\n  <div class=\"grid two\"><div class=\"card\"><h3 class=\"section-title\">Geographic opportunity map</h3><div class=\"wire\" style=\"min-height:320px\">Map placeholder<br>65+ population + nursing-home density + current trainers + 50km catchments</div><div class=\"legend\">Clicking a geography should filter accounts, opportunities, demand and capacity.</div></div>\n  </div>\n  <div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Assumption register</h3><table><thead><tr><th>Assumption</th><th>Value</th><th>Source</th><th>Owner</th><th>Last checked</th><th>Confidence</th><th>Next validation</th></tr></thead><tbody><tr><td>Average sessions per nursing home</td><td>48/year</td><td>Historic delivery</td><td>Thomas</td><td>12 Jun</td><td><span class=\"pill green\">High</span></td><td>Reconcile with contracts</td></tr><tr><td>One-to-one referral conversion</td><td>18%</td><td>Pilot estimate</td><td>Marketing</td><td>12 Jun</td><td><span class=\"pill amber\">Medium</span></td><td>Track GP cohorts</td></tr><tr><td>NI obtainable market share</td><td>Range only</td><td>Not validated</td><td>Thomas / Gordon</td><td>—</td><td><span class=\"pill red\">Low</span></td><td>Two prospect conversations</td></tr></tbody></table></div>\n",
-accounts:"\n  <div class=\"page-head\"><div><h2>Accounts & Contacts</h2><p>A genuine CRM record—not merely a list of prospects.</p></div><span class=\"tag\">CRM core</span></div>\n  <div class=\"split\">\n    <div class=\"card\"><h3 class=\"section-title\">Account list</h3><table><thead><tr><th>Account</th><th>Type</th><th>Geography</th><th>Potential</th><th>Relationship</th><th>Next action</th><th>Owner</th></tr></thead><tbody>\n      <tr><td><b>Harbour Care Group</b><br><small>6 sites</small></td><td>Nursing-home group</td><td>Dublin / Meath</td><td>€51,840</td><td><span class=\"pill green\">Warm</span></td><td>Discovery 18 Jul</td><td>Thomas</td></tr>\n      <tr><td><b>Oak Medical Practice</b></td><td>GP / referrer</td><td>Dublin 9</td><td>120 referrals</td><td><span class=\"pill amber\">Developing</span></td><td>Send pathway pack</td><td>Aisling</td></tr>\n      <tr><td><b>Active Age Border Network</b></td><td>Patient group</td><td>Louth / Down</td><td>NI validation</td><td><span class=\"pill accent\">Existing relationship</span></td><td>Arrange NI interview</td><td>Thomas</td></tr>\n      <tr><td><b>St Brigid’s Hospital</b></td><td>Hospital</td><td>Cork</td><td>€24,000</td><td><span class=\"pill\">Cold</span></td><td>Identify decision maker</td><td>Unassigned</td></tr>\n    </tbody></table></div>\n    <div class=\"card\"><h3 class=\"section-title\">Account 360°</h3><b>Harbour Care Group</b><p class=\"helper\">Parent account with six service locations</p><table><tbody><tr><td>Account tier</td><td><b>A — strategic</b></td></tr><tr><td>Primary contact</td><td>Director of Care</td></tr><tr><td>Current services</td><td>2 sites / 96 sessions</td></tr><tr><td>Whitespace</td><td>4 sites / €34,560</td></tr><tr><td>Open pipeline</td><td>€25,920</td></tr><tr><td>Renewal date</td><td>30 Nov 2026</td></tr><tr><td>Last activity</td><td>Call 10 Jul</td></tr><tr><td>Next best action</td><td><b>Group-wide proposal</b></td></tr></tbody></table><button class=\"btn primary\" style=\"margin-top:12px\">Open full account</button></div>\n  </div>\n  <div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Mandatory account data</h3><div class=\"checks\"><div class=\"check\">Account hierarchy: group, site, practice, hospital or individual</div><div class=\"check\">Buyer, influencer, referrer and service contact roles</div><div class=\"check\">Route, geography, 65+ persona and need</div><div class=\"check\">Current contract, historic revenue and session history</div><div class=\"check\">Potential annual value and whitespace</div><div class=\"check\">Consent, communication preferences and GDPR basis</div><div class=\"check\">Relationship strength and last meaningful interaction</div><div class=\"check\">Named owner, next action and due date</div></div></div>\n",
-contracts:"\n  <div class=\"page-head\"><div><h2>Contracts, Onboarding & Renewals</h2><p>Close the loop between sales and actual recurring income.</p></div><span class=\"tag\">Revenue operations</span></div>\n  <div class=\"grid kpis\"><div class=\"card kpi\"><div class=\"label\">Active contracts</div><div class=\"value\">86</div><div class=\"delta\">Across 64 accounts</div></div><div class=\"card kpi\"><div class=\"label\">Contracted annual value</div><div class=\"value\">€1.12m</div><div class=\"delta\">Excludes HSE</div></div><div class=\"card kpi\"><div class=\"label\">Renewals next 90 days</div><div class=\"value\">9</div><div class=\"delta warn\">€146k at review</div></div><div class=\"card kpi\"><div class=\"label\">At-risk value</div><div class=\"value\">€32k</div><div class=\"delta bad\">Service / buyer issues</div></div><div class=\"card kpi\"><div class=\"label\">Expansion whitespace</div><div class=\"value\">€208k</div><div class=\"delta\">Existing account sites</div></div><div class=\"card kpi\"><div class=\"label\">Revenue concentration</div><div class=\"value\">60%</div><div class=\"delta warn\">HSE watching brief</div></div></div>\n  <div class=\"grid two\"><div class=\"card\"><h3 class=\"section-title\">Won-to-live workflow</h3><div class=\"flow\"><div class=\"step done\">Opportunity won</div><span class=\"arrow\">→</span><div class=\"step active\">Contract signed</div><span class=\"arrow\">→</span><div class=\"step\">Capacity allocated</div><span class=\"arrow\">→</span><div class=\"step\">Delivery schedule</div><span class=\"arrow\">→</span><div class=\"step\">Service live</div><span class=\"arrow\">→</span><div class=\"step\">Invoice / actual revenue</div></div><div class=\"callout\">The engine should distinguish <b>forecast revenue</b>, <b>contracted revenue</b>, <b>scheduled delivery</b> and <b>actual revenue</b>.</div></div><div class=\"card\"><h3 class=\"section-title\">Renewal health</h3><table><thead><tr><th>Account</th><th>Renewal</th><th>Value</th><th>Health</th><th>Action</th></tr></thead><tbody><tr><td>Harbour Care</td><td>30 Nov</td><td>€17,280</td><td><span class=\"pill green\">Healthy</span></td><td>Expansion proposal</td></tr><tr><td>St Anne’s Group</td><td>18 Sep</td><td>€28,800</td><td><span class=\"pill red\">At risk</span></td><td>Executive call</td></tr><tr><td>Active Age East</td><td>05 Oct</td><td>€10,200</td><td><span class=\"pill amber\">Watch</span></td><td>Impact report</td></tr></tbody></table></div></div>\n",
-board:"\n  <div class=\"page-head\"><div><h2>Board Growth Plan & Reporting</h2><p>A sign-off view that traces every headline number back to evidence.</p></div><span class=\"tag\">Board governance</span></div>\n  <div class=\"grid two\"><div class=\"card\"><h3 class=\"section-title\">Board scorecard</h3><table><thead><tr><th>Measure</th><th>Plan</th><th>Forecast</th><th>Actual</th><th>Status</th><th>Comment</th></tr></thead><tbody><tr><td>Total income growth</td><td>€2.00m</td><td>€1.46m</td><td>€310k YTD</td><td><span class=\"pill amber\">Behind</span></td><td>Pipeline coverage insufficient</td></tr><tr><td>Nursing-home growth</td><td>€1.05m</td><td>€820k</td><td>€180k</td><td><span class=\"pill green\">On track</span></td><td>Prioritise group accounts</td></tr><tr><td>One-to-one growth</td><td>€500k</td><td>€315k</td><td>€72k</td><td><span class=\"pill red\">At risk</span></td><td>Referral and capacity constraints</td></tr><tr><td>Contribution</td><td>Target %</td><td>49.0%</td><td>47.3%</td><td><span class=\"pill amber\">Review</span></td><td>1:1 price / cost pressure</td></tr><tr><td>Workforce trajectory</td><td>38 → 85</td><td>85 required</td><td>38 active</td><td><span class=\"pill red\">Gap</span></td><td>Recruitment trigger active</td></tr><tr><td>NI validation</td><td>Gate by M7</td><td>Stage 1</td><td>0/2 prospects</td><td><span class=\"pill amber\">Open</span></td><td>No committed forecast yet</td></tr></tbody></table></div><div class=\"card\"><h3 class=\"section-title\">Decisions required</h3><div class=\"alert\"><span class=\"dot bad\"></span><div><b>Approve route mix or extend target timing.</b><br><small>Current bottom-up forecast does not yet close the €2m gap.</small></div></div><div class=\"alert\"><span class=\"dot\"></span><div><b>Decide one-to-one margin position.</b><br><small>Price, travel model or delivery design must change.</small></div></div><div class=\"alert\"><span class=\"dot\"></span><div><b>Approve recruitment ahead of won contracts?</b><br><small>Choose risk appetite and capacity trigger.</small></div></div><div class=\"alert\"><span class=\"dot good\"></span><div><b>Retain HSE as a watching brief.</b><br><small>Show concentration and renewal date without letting it drive SO1.</small></div></div></div></div>\n  <div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Audit trail behind each board number</h3><div class=\"schema\"><div class=\"entity\"><b>Board target</b><span>approved plan/version</span></div><span>→</span><div class=\"entity\"><b>Market assumptions</b><span>source + confidence</span></div><span>→</span><div class=\"entity\"><b>Route volumes</b><span>required sales</span></div><span>→</span><div class=\"entity\"><b>Opportunities</b><span>named pipeline</span></div><span>→</span><div class=\"entity\"><b>Contracts</b><span>committed value</span></div><span>→</span><div class=\"entity\"><b>Delivery & actuals</b><span>realised income</span></div></div></div>\n",
-blueprint:"\n  <div class=\"page-head\"><div><h2>System Blueprint</h2><p>Minimum data architecture and automations needed for a robust CRM.</p></div><span class=\"tag\">Developer handoff</span></div>\n  <div class=\"card\"><h3 class=\"section-title\">Core data model</h3><div class=\"schema\"><div class=\"entity\"><b>Market / Geography</b><span>ROI, NI, catchments</span></div><span>→</span><div class=\"entity\"><b>Account</b><span>group, site, referrer, buyer</span></div><span>→</span><div class=\"entity\"><b>Contact</b><span>role + influence</span></div><span>→</span><div class=\"entity\"><b>Lead / Referral</b><span>source + consent</span></div><span>→</span><div class=\"entity\"><b>Opportunity</b><span>route, value, volume</span></div><span>→</span><div class=\"entity\"><b>Quote</b><span>price + margin approval</span></div><span>→</span><div class=\"entity\"><b>Contract</b><span>term + renewal</span></div><span>→</span><div class=\"entity\"><b>Delivery</b><span>sessions + capacity</span></div><span>→</span><div class=\"entity\"><b>Revenue actual</b><span>invoice / received</span></div></div><div class=\"schema\" style=\"margin-top:12px\"><div class=\"entity\"><b>Service / route</b><span>NH, 1:1, groups, online</span></div><span>↔</span><div class=\"entity\"><b>Price book</b><span>cost, margin, EUR/GBP</span></div><span>↔</span><div class=\"entity\"><b>Campaign</b><span>activity + attribution</span></div><span>↔</span><div class=\"entity\"><b>Trainer / capacity</b><span>skills, radius, hours</span></div><span>↔</span><div class=\"entity\"><b>Assumption / evidence</b><span>source, confidence, review</span></div></div></div>\n  <div class=\"grid two\" style=\"margin-top:12px\"><div class=\"card\"><h3 class=\"section-title\">Required automations</h3><div class=\"checks\"><div class=\"check\">Calculate annual value, direct contribution and full-cost surplus</div><div class=\"check\">Block quote issue below minimum margin unless approved</div><div class=\"check\">Create next-action task when pipeline stage changes</div><div class=\"check\">Flag opportunities with no activity or overdue close date</div><div class=\"check\">Compare forecast volume with capacity by route and geography</div><div class=\"check\">Trigger recruitment workflow when capacity threshold is reached</div><div class=\"check\">Create contract, onboarding and renewal from closed-won</div><div class=\"check\">Exclude unvalidated NI opportunities from committed forecast</div><div class=\"check\">Update board scorecard from pipeline, contracts and actuals</div><div class=\"check\">Create data-quality alerts for incomplete mandatory fields</div></div></div><div class=\"card\"><h3 class=\"section-title\">Role-based access</h3><table><thead><tr><th>Role</th><th>Can see</th><th>Can change</th></tr></thead><tbody><tr><td>Thomas / Commercial Lead</td><td>All commercial data</td><td>Targets, pipeline, prices, approvals</td></tr><tr><td>Marketing</td><td>Campaigns, leads, route funnels</td><td>Activities, leads, attribution</td></tr><tr><td>Operations</td><td>Won pipeline, contracts, capacity</td><td>Delivery and trainer allocation</td></tr><tr><td>Finance</td><td>Prices, contracts, actual revenue</td><td>Costs, actuals, reconciliations</td></tr><tr><td>Board</td><td>Scorecard and decisions</td><td>Approvals / plan version only</td></tr><tr><td>Advisor</td><td>Selected plan / NI evidence</td><td>Comments, not source records</td></tr></tbody></table></div></div>\n  <div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Recommended first-build stack</h3><div class=\"schema\"><div class=\"entity\"><b>GitHub</b><span>source control + Codex workspace</span></div><span>→</span><div class=\"entity\"><b>Netlify</b><span>secure web app deployment</span></div><span>↔</span><div class=\"entity\"><b>Airtable</b><span>CRM data + operating tables</span></div><span>→</span><div class=\"entity\"><b>Codex + ChatGPT</b><span>build, test and version control</span></div></div></div><div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Recommended build sequence</h3><div class=\"flow\"><div class=\"step active\">MVP 1<br><b>Targets + CRM + pipeline</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 2<br><b>Pricing + quotes</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 3<br><b>Volume + capacity</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 4<br><b>Contracts + actuals</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 5<br><b>NI gate + board pack</b></div></div><div class=\"callout\"><b>Non-negotiable design principle:</b> do not build separate “pricing”, “CRM” and “forecast” tools. Use one record structure so a price decision flows into an opportunity, required volume, capacity, contract and actual income.</div></div>\n"};
-const CRM_NOTICE = "<div class=\"notice\"><b>Illustrative section below:</b> the sample tables and wireframes that follow show the target design — the registers and figures above them are live and save automatically.</div>";
+const CRM_STATIC = {blueprint:"\n  <div class=\"page-head\"><div><h2>System Blueprint</h2><p>Minimum data architecture and automations needed for a robust CRM.</p></div><span class=\"tag\">Developer handoff</span></div>\n  <div class=\"card\"><h3 class=\"section-title\">Core data model</h3><div class=\"schema\"><div class=\"entity\"><b>Market / Geography</b><span>ROI, NI, catchments</span></div><span>→</span><div class=\"entity\"><b>Account</b><span>group, site, referrer, buyer</span></div><span>→</span><div class=\"entity\"><b>Contact</b><span>role + influence</span></div><span>→</span><div class=\"entity\"><b>Lead / Referral</b><span>source + consent</span></div><span>→</span><div class=\"entity\"><b>Opportunity</b><span>route, value, volume</span></div><span>→</span><div class=\"entity\"><b>Quote</b><span>price + margin approval</span></div><span>→</span><div class=\"entity\"><b>Contract</b><span>term + renewal</span></div><span>→</span><div class=\"entity\"><b>Delivery</b><span>sessions + capacity</span></div><span>→</span><div class=\"entity\"><b>Revenue actual</b><span>invoice / received</span></div></div><div class=\"schema\" style=\"margin-top:12px\"><div class=\"entity\"><b>Service / route</b><span>NH, 1:1, groups, online</span></div><span>↔</span><div class=\"entity\"><b>Price book</b><span>cost, margin, EUR/GBP</span></div><span>↔</span><div class=\"entity\"><b>Campaign</b><span>activity + attribution</span></div><span>↔</span><div class=\"entity\"><b>Trainer / capacity</b><span>skills, radius, hours</span></div><span>↔</span><div class=\"entity\"><b>Assumption / evidence</b><span>source, confidence, review</span></div></div></div>\n  <div class=\"grid two\" style=\"margin-top:12px\"><div class=\"card\"><h3 class=\"section-title\">Required automations</h3><div class=\"checks\"><div class=\"check\">Calculate annual value, direct contribution and full-cost surplus</div><div class=\"check\">Block quote issue below minimum margin unless approved</div><div class=\"check\">Create next-action task when pipeline stage changes</div><div class=\"check\">Flag opportunities with no activity or overdue close date</div><div class=\"check\">Compare forecast volume with capacity by route and geography</div><div class=\"check\">Trigger recruitment workflow when capacity threshold is reached</div><div class=\"check\">Create contract, onboarding and renewal from closed-won</div><div class=\"check\">Exclude unvalidated NI opportunities from committed forecast</div><div class=\"check\">Update board scorecard from pipeline, contracts and actuals</div><div class=\"check\">Create data-quality alerts for incomplete mandatory fields</div></div></div><div class=\"card\"><h3 class=\"section-title\">Role-based access</h3><table><thead><tr><th>Role</th><th>Can see</th><th>Can change</th></tr></thead><tbody><tr><td>Thomas / Commercial Lead</td><td>All commercial data</td><td>Targets, pipeline, prices, approvals</td></tr><tr><td>Marketing</td><td>Campaigns, leads, route funnels</td><td>Activities, leads, attribution</td></tr><tr><td>Operations</td><td>Won pipeline, contracts, capacity</td><td>Delivery and trainer allocation</td></tr><tr><td>Finance</td><td>Prices, contracts, actual revenue</td><td>Costs, actuals, reconciliations</td></tr><tr><td>Board</td><td>Scorecard and decisions</td><td>Approvals / plan version only</td></tr><tr><td>Advisor</td><td>Selected plan / NI evidence</td><td>Comments, not source records</td></tr></tbody></table></div></div>\n  <div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Recommended first-build stack</h3><div class=\"schema\"><div class=\"entity\"><b>GitHub</b><span>source control + Codex workspace</span></div><span>→</span><div class=\"entity\"><b>Netlify</b><span>secure web app deployment</span></div><span>↔</span><div class=\"entity\"><b>Airtable</b><span>CRM data + operating tables</span></div><span>→</span><div class=\"entity\"><b>Codex + ChatGPT</b><span>build, test and version control</span></div></div></div><div class=\"card\" style=\"margin-top:12px\"><h3 class=\"section-title\">Recommended build sequence</h3><div class=\"flow\"><div class=\"step active\">MVP 1<br><b>Targets + CRM + pipeline</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 2<br><b>Pricing + quotes</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 3<br><b>Volume + capacity</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 4<br><b>Contracts + actuals</b></div><span class=\"arrow\">→</span><div class=\"step\">MVP 5<br><b>NI gate + board pack</b></div></div><div class=\"callout\"><b>Non-negotiable design principle:</b> do not build separate “pricing”, “CRM” and “forecast” tools. Use one record structure so a price decision flows into an opportunity, required volume, capacity, contract and actual income.</div></div>\n"};
 
 function buildSO1TrackerCard(){
   return `
@@ -2102,8 +2109,20 @@ function accountRowHTML(a){
     <td style="text-align:center; width:34px;"><button type="button" class="remove-btn" data-action="removeaccount" data-id="${a.id}" title="Remove">✕</button></td>
   </tr>`;
 }
+let accFilter = {type:'', search:'', actionOnly:false};
+function filteredAccounts(){
+  const s = accFilter.search.trim().toLowerCase();
+  return accounts.filter(a=>
+    (!accFilter.type || a.type===accFilter.type) &&
+    (!s || (a.name||'').toLowerCase().includes(s)) &&
+    (!accFilter.actionOnly || (a.nextAction||'').trim())
+  );
+}
 function renderAccounts(){
-  const tb=document.getElementById('account-rows'); if(tb) tb.innerHTML=accounts.map(accountRowHTML).join('');
+  const list = filteredAccounts();
+  const tb=document.getElementById('account-rows'); if(tb) tb.innerHTML=list.map(accountRowHTML).join('');
+  const cnt=document.getElementById('acc-filter-count');
+  if(cnt) cnt.textContent = list.length===accounts.length? `Showing all ${accounts.length} accounts` : `Showing ${list.length} of ${accounts.length} accounts`;
   const em=document.getElementById('accounts-empty'); if(em) em.style.display=accounts.length?'none':'block';
   const tbl=document.getElementById('accounts-table'); if(tbl) tbl.style.display=accounts.length?'table':'none';
 }
@@ -2118,10 +2137,19 @@ function buildAccountsPanel(){
       <div class="kpi"><div class="kpi-label">Warm or existing</div><div class="kpi-val" id="acc-kpi-warm">—</div><div class="kpi-sub">Relationship strength</div></div>
       <div class="kpi"><div class="kpi-label">Missing next action</div><div class="kpi-val" id="acc-kpi-noaction">—</div><div class="kpi-sub">Every account needs one</div></div>
     </div>
+    <div class="fieldrow" style="align-items:end; margin-bottom:10px;">
+      <div class="field" style="max-width:220px;"><label>Filter by target market</label>
+        <select data-action="accfiltertype"><option value="">All markets</option>${ACCOUNT_TYPES.map(t=>`<option ${accFilter.type===t?'selected':''}>${t}</option>`).join('')}</select></div>
+      <div class="field" style="max-width:260px;"><label>Search name</label>
+        <input type="text" placeholder="Start typing a client name…" data-action="accfiltersearch" value="${esc(accFilter.search)}"></div>
+      <div class="field" style="max-width:200px;"><label style="visibility:hidden;">x</label>
+        <label class="check-row" style="margin:0;"><input type="checkbox" data-action="accfilteraction" ${accFilter.actionOnly?'checked':''}> Needs action only</label></div>
+      <div class="field"><label style="visibility:hidden;">x</label><span class="hint" id="acc-filter-count" style="font-size:12px;">${(()=>{const l=filteredAccounts().length; return l===accounts.length? 'Showing all '+accounts.length+' accounts' : 'Showing '+l+' of '+accounts.length+' accounts';})()}</span></div>
+    </div>
     <div class="summary-table">
     <table id="accounts-table" style="${accounts.length?'':'display:none;'}">
       <thead><tr><th>Account</th><th>Type</th><th>Geography</th><th>Potential (€/yr)</th><th>Relationship</th><th>Next action</th><th>Owner</th><th></th></tr></thead>
-      <tbody id="account-rows">${accounts.map(accountRowHTML).join('')}</tbody>
+      <tbody id="account-rows">${filteredAccounts().map(accountRowHTML).join('')}</tbody>
     </table>
     </div>
     <p class="empty-note" id="accounts-empty" style="${accounts.length?'display:none;':''}">No accounts yet — click + Add account to start the register.</p>
@@ -3517,6 +3545,9 @@ document.addEventListener('input', e=>{
     if(l){ l.label = t.value; l.short = t.value; }
     if(_initComplete) saveStateToLocalStorage();
     return; // skip updateAll — nothing numeric changed
+  } else if(action==='accfiltersearch'){
+    accFilter.search = t.value; renderAccounts();
+    return; // view-only — no model change, no save
   } else if(action==='roimarketfield'){
     const rp = roiMarketSizing[t.dataset.product]; if(rp) rp[t.dataset.field] = t.value;
   } else if(action==='workforcefield'){
@@ -3542,7 +3573,13 @@ document.addEventListener('change', e=>{
   const t = e.target;
   const action = t.dataset.action;
   if(!action) return;
-  if(action==='directline'){
+  if(action==='accfiltertype'){
+    accFilter.type = t.value; renderAccounts();
+    return;
+  } else if(action==='accfilteraction'){
+    accFilter.actionOnly = t.checked; renderAccounts();
+    return;
+  } else if(action==='directline'){
     findProduct(t.dataset.product).directLine = t.value;
     updateAll();
   } else if(action==='roileave'){
@@ -3878,6 +3915,11 @@ function wireDataBar(){
       setSaveStatus('Could not save to your account — your work is safe on this device. Try again in a moment.');
     });
   });
+  document.getElementById('btn-howto').addEventListener('click', ()=>{
+    const navBtn = document.querySelector('nav.tabs button[data-tab="objective"]');
+    if(navBtn) navBtn.click();
+  });
+
   document.getElementById('btn-import').addEventListener('click', ()=>{
     document.getElementById('file-import').click();
   });
