@@ -260,8 +260,10 @@ let products = [
     capacityThreshold:0, stepCost:0, altPrice:null, altVolume:null
   },
   {
-    key:'hospital', name:'Hospital', unit:'session', unitPlural:'sessions',
-    priceNI:null, priceNote:'Not yet priced — one of the five ROI routes; enter a price to test it here.',
+    // Internal key stays 'hospital' so existing saved data keeps mapping; on screen this is the
+    // Community Groups channel from the 2026–2030 strategy (Hospital is not a strategy channel).
+    key:'hospital', name:'Community Groups', unit:'participant place', unitPlural:'participant places',
+    priceNI:10, priceNote:'Strategy 2026: €10 per participant per session (2030 estimate €11). Not yet given a share of the cost base.',
     allocations:{trainertime:0, prep:0, admin:0, management:0, premises:0, other:0},
     directLine:'trainertime', materialsPerUnit:0, unitsPerYear:0, profitTarget:0,
     roiPrice:null, roiLeave:true, roiNote:'Not part of the SO2 cross-border sequence (nursing homes → patient groups → border relationships) — leave NI for now.',
@@ -339,7 +341,7 @@ const CATEGORIES = [
   {key:'nursinghomes', name:'Nursing Homes', type:'service'},
   {key:'patientgroups', name:'Patient Groups', type:'service'},
   {key:'onetoone', name:'One-to-One', type:'service'},
-  {key:'hospital', name:'Hospital', type:'service'},
+  {key:'hospital', name:'Community Groups', type:'service'},
   {key:'online', name:'Online (Siel Bleu at Home)', type:'service'}
 ];
 CATEGORIES.forEach(c=>{ roiAnswers[c.key] = {}; });
@@ -422,8 +424,8 @@ const FINAL_PRICING_ROWS = [
   {key:'patientgroups-roi', product:'Patient Groups', market:'NI', refProduct:'patientgroups', roi:true, cat:'patientgroups', mkt:'roi'},
   {key:'onetoone-ni', product:'One-to-One', market:'ROI', refProduct:'onetoone', cat:'onetoone', mkt:'ni'},
   {key:'onetoone-roi', product:'One-to-One', market:'NI', refProduct:'onetoone', roi:true, cat:'onetoone', mkt:'roi'},
-  {key:'hospital-ni', product:'Hospital', market:'ROI', refProduct:'hospital', cat:'hospital', mkt:'ni'},
-  {key:'hospital-roi', product:'Hospital', market:'NI', refProduct:'hospital', roi:true, cat:'hospital', mkt:'roi'},
+  {key:'hospital-ni', product:'Community Groups', market:'ROI', refProduct:'hospital', cat:'hospital', mkt:'ni'},
+  {key:'hospital-roi', product:'Community Groups', market:'NI', refProduct:'hospital', roi:true, cat:'hospital', mkt:'roi'},
   {key:'online-ni', product:'Online (Siel Bleu at Home)', market:'ROI', refProduct:'online', cat:'online', mkt:'ni'},
   {key:'online-roi', product:'Online (Siel Bleu at Home)', market:'NI', refProduct:'online', roi:true, cat:'online', mkt:'roi'}
 ];
@@ -461,10 +463,10 @@ let so2ChecklistState = {};
 SO2_CHECKLIST_ITEMS.forEach(i=>{ so2ChecklistState[i.key] = false; });
 
 const SO1_ACTIONS = [
-  {key:'target', label:'Fix the target', detail:'Confirm and lock the ~€2.4m growth target toward the €4m ambition by 2030.', why:'Everything sizes off this number; growth-led, HSE on watching brief.', owner:'Thomas / Fiona', byWhen:'Post-OR2', goto:null},
+  {key:'target', label:'Fix the target', detail:'Locked by the 2026–2030 strategy: €4.125m income by 2030 from €2.022m in 2026, a €2.1m growth gap.', why:'Everything sizes off this number; growth-led, HSE on watching brief.', owner:'Thomas / Fiona', byWhen:'Post-OR2', goto:null},
   {key:'sizemarket', label:'Size the market', detail:'Nursing homes (+ one-to-one) in the target geographies, 65+ population, realistic obtainable share.', why:'Confirms the target is real, bottom-up — not just a strategy number.', owner:'Thomas', byWhen:'M2 — 16 Jul', goto:null},
-  {key:'routes', label:'Establish the routes', detail:'Nursing homes priority one, one-to-one via GP/HealthLink second, plus patient groups, hospital, online. Agree which carries what share.', why:'Defines where the growth comes from.', owner:'Thomas', byWhen:'M2 — 16 Jul', goto:'floorsummary'},
-  {key:'priceroutes', label:'Price each route and its margin', detail:'Confirmed price points (NH €90, groups €85, one-to-one €65, online €22.50–€25/mo) and the contribution each sale makes after delivery cost.', why:'So volume is sized to the surplus, not just the top line.', owner:'Thomas', byWhen:'M2–M4', goto:'finalprice'},
+  {key:'routes', label:'Establish the routes', detail:'Nursing homes priority one, one-to-one via GP/HealthLink second, plus patient groups, community groups, online. Agree which carries what share.', why:'Defines where the growth comes from.', owner:'Thomas', byWhen:'M2 — 16 Jul', goto:'floorsummary'},
+  {key:'priceroutes', label:'Price each route and its margin', detail:'Strategy 2026 prices (NH €90, patient groups €85, one-to-one €65, community €10 per participant, online €25/mo) and the contribution each sale makes after delivery cost.', why:'So volume is sized to the surplus, not just the top line.', owner:'Thomas', byWhen:'M2–M4', goto:'finalprice'},
   {key:'convertvolume', label:'Convert to volume', detail:'How many sales per route per year to hit the target (e.g. €450k one-to-one ≈ 6,900 sessions/yr).', why:'Makes the target a concrete sales number.', owner:'Thomas', byWhen:'M2–M4', goto:'forecast'},
   {key:'proposition', label:'Build the proposition & sales/marketing plan', detail:'The 65+ positioning (personas per age band incl. carer/family buyer) and the activity to deliver the volume.', why:'You cannot market without knowing who you sell to; the activity delivers the volume.', owner:'Thomas + Marketing', byWhen:'M3–M6', goto:'pathway'},
   {key:'resource', label:'Resource it', detail:'Size the workforce to the volume (38 to 85 trajectory, 50km radius) and build the recruitment and retention plan, incl. NI trainers.', why:'If the volume cannot be staffed, the plan is not real.', owner:'Thomas / board', byWhen:'M4–M5', goto:'forecast'},
@@ -675,7 +677,7 @@ const PRODUCT_TABS = [
   {key:'nursinghomes', label:'Nursing Homes', products:['nursinghomes']},
   {key:'patientgroups', label:'Patient Groups', products:['patientgroups']},
   {key:'onetoone', label:'One-to-One', products:['onetoone']},
-  {key:'hospital', label:'Hospital', products:['hospital']},
+  {key:'hospital', label:'Community Groups', products:['hospital']},
   {key:'online', label:'Online', products:['online']}
 ];
 
@@ -2203,7 +2205,7 @@ function buildTargetCard(){
       <div class="field"><label>2030 income ambition (€)</label><input type="number" step="1000" min="0" data-action="markettarget" data-field="ambition" value="${marketTargets.ambition||''}"></div>
       <div class="field"><label>Current baseline (€)</label><input type="number" step="1000" min="0" data-action="markettarget" data-field="baseline" value="${marketTargets.baseline||''}"></div>
       <div class="field"><label>Growth gap</label><div class="stat" style="margin-top:0;"><div class="val" id="mt-gap" style="font-size:17px;">—</div></div></div>
-      <div class="field"><label>Target date</label><input type="text" placeholder="To confirm after OR2" data-action="markettarget" data-field="targetDate" value="${esc(marketTargets.targetDate||'')}"></div>
+      <div class="field"><label>Target date</label><input type="text" placeholder="e.g. Dec 2030" data-action="markettarget" data-field="targetDate" value="${esc(marketTargets.targetDate||'')}"></div>
     </div>
     <div class="fieldrow">
       <div class="field" style="max-width:300px;"><label>HSE income (€/yr) — watching brief</label><input type="number" step="1000" min="0" data-action="markettarget" data-field="hseIncome" value="${marketTargets.hseIncome||''}"><span class="hint" id="mt-hse-share">Concentration stays visible, not driving — the board's footnote.</span></div>
@@ -2235,7 +2237,95 @@ function buildRoiSizingCard(){
     <div id="roi-sizing-note"></div>
   </div>`;
 }
-function buildMarketPanel(){ return buildTargetCard() + buildRoiSizingCard() + buildSO1TrackerCard(); }
+
+// ---------- Strategy 2026–2030 (board version, Nov 2026) — read-only reference ----------
+// Source: Siel Bleu Ireland Strategy Document 2026–2030 (Nov 2026). Figures are as printed in the
+// document; STRATEGY_CHECKS lists where the document disagrees with itself or with this tool.
+const STRATEGY_2030 = {
+  headline:[['30,000','Weekly service users'],['84,700','Sessions delivered a year'],['26','Counties covered'],['90+','Team members'],['€850k','Financial reserve'],['10 : 1','Social value per €1 invested']],
+  years:['2026','2027','2028','2029','2030'],
+  finance:[
+    ['Traded income',[2000000,2400000,2850000,3350000,3900000]],
+    ['Grants',[12000,30000,40000,50000,60000]],
+    ['Corporate partnerships',[10000,50000,85000,125000,350000]],
+    ['Income total',[2022000,2480000,2975000,3525000,4125000],'tot'],
+    ['Salaries & related costs',[1570000,1900000,2250000,2625000,3025000]],
+    ['Indirect costs',[95000,110000,125000,145000,165000]],
+    ['Equipment',[20000,25000,30000,35000,40000]],
+    ['Technology & systems',[25000,35000,45000,55000,65000]],
+    ['Marketing & business development',[40000,55000,70000,90000,110000]],
+    ['Other',[45000,50000,55000,60000,70000]],
+    ['Expenditure total',[1795000,2175000,2575000,3010000,3475000],'tot'],
+    ['Operating balance',[227000,305000,400000,515000,650000],'tot'],
+    ['Target reserve fund',[150000,300000,450000,650000,850000],'tot']
+  ],
+  margin:['11.2%','12.3%','13.4%','14.6%','15.8%'],
+  channels:[
+    // [name, tool route key, participants/week 2026, 2030, price 2026, price 2030 (estimate)]
+    ['Nursing homes & day care','nursinghomes',5500,8500,'€90 / session','€99.25 / session'],
+    ['Patient groups (chronic conditions)','patientgroups',4090,13400,'€85 / session','€93.70 / session'],
+    ['Community groups','hospital',3050,5800,'€10 / participant','€11 / participant'],
+    ['One-to-one sessions','onetoone',80,700,'€65 / session','€76 / session'],
+    ['Online programme','online',280,1600,'€25 / month','€25 / month']
+  ],
+  pricing:[['2025','Rebase','Establish cost base'],['2026','Implement','Correct historical underpricing'],['2027','Understand','True cost of delivery; notify for Jan 2028'],['2028','Reset','Differentiated pricing by service and client'],['2029','Index','Predictable adjustments; notify for Jan 2029'],['2030','Optimise','Full January increase, then modest rises']],
+  pillars:[
+    ['1','Impact & Access','5/10','Building foundations','30,000+ weekly participants; all 26 counties; 90% satisfaction; 290 nursing-home and day-care clients (~15,000 sessions a year); 40 new NH sessions a year'],
+    ['2','Innovation & Digital','3/10','Building foundations','Digital participation up 250%; CRM, outcome tracking and reporting systems in place'],
+    ['3','People & Partnerships','4/10','Delivering growth','100% of staff trained each year; staff retention of 85% or more; regional coordinators'],
+    ['4','Organisational Sustainability','6/10','Building foundations','10% annual surplus for reinvestment; reserves built by 2030; 100% digital operating systems'],
+    ['5','Visibility, Voice & Advocacy','5/10','Delivering growth','Reach 500,000 people a year through campaigns and media; policy consultations; participant ambassadors']
+  ],
+  delivery:[['Weekly classes','550 today → 1,765 by 2030 (+1,215), at 17 participants per class'],['Trainers','45 today → 85 by 2030 (net +40, full and part time)'],['Recruitment model','5:1 — five trainers in priority (high-population) areas for every one in less dense areas'],['Regional framework','Expansion organised around the 6 HSE Health Regions'],['Counties','24 in 2026 → 26 by 2030']]
+};
+const STRATEGY_CHECKS = [
+  ['2030 income lines do not add up','Traded €3.9m + grants €60k + corporate €350k = €4.31m, but the total is printed as €4.125m (and the margin of 15.8% is worked from €4.125m). Either traded income or corporate partnerships is €185k too high.'],
+  ['Online growth is stated two ways','Pillar 2 says digital participation grows 250%. The channel table shows 280 → 1,600 weekly participants, which is +471%.'],
+  ['Price increases do not match the note','The 2030 price table says it reflects two 2.5% rises (about +5%). The figures are about +10% for nursing homes, patient groups and community groups, and +17% for one-to-one (€65 → €76).'],
+  ['Annual sessions are stated two ways','Headline: 84,700 sessions a year. Page 22: 1,765 weekly classes, "91,765 annually". 84,700 works out at about 48 weeks; 91,765 at 52.'],
+  ['Trainer numbers are stated two ways','Page 27 text: trainers grow from 45 to 85. The chart on the same page shows about 50 trainers in 2026 rising to 70, plus 15 office staff. The headline says 90+ team members.'],
+  ['Class size falls from about 24 to 17','Today 13,000 participants across 550 classes is about 24 per class. The 2030 plan assumes 17, which is why classes have to more than triple. Worth confirming that is deliberate.'],
+  ['One-to-one is still priced below cost','This tool puts the cost floor at €75.38 a session. The strategy keeps one-to-one at €65 in 2026 and reaches €76 only by 2030, while the channel grows from 80 to 700 participants a week.'],
+  ['Community groups carry no cost in this tool','The whole cost base is currently shared between nursing homes, patient groups and one-to-one. Community groups (3,050 participants a week) need a share, which will lower the other floors.'],
+  ['HSE concentration is not in the projections','The strategy does not split out HSE income. The SELECT objective on HSE exposure still needs its own figures.'],
+  ['Draft notes left in the document','Page 21 retention target still says "(QUANTIFY)"; page 22 still says "Add to this to explain rationale behind numbers". The SWOT says 25 counties, page 57 says 24.']
+];
+function buildStrategyCard(){
+  const S = STRATEGY_2030;
+  const eurK = n=>'€'+n.toLocaleString('en-GB');
+  const head = S.headline.map(h=>`<div class="stat"><div class="lbl">${h[1]}</div><div class="val" style="font-size:19px;">${h[0]}</div></div>`).join('');
+  const finRows = S.finance.map(r=>`<tr${r[2]?' style="font-weight:700;background:var(--soft,#f5f3f4);"':''}><td>${r[0]}</td>${r[1].map(v=>`<td style="text-align:right;">${eurK(v)}</td>`).join('')}</tr>`).join('')
+    + `<tr style="font-weight:700;"><td>Operating margin</td>${S.margin.map(m=>`<td style="text-align:right;">${m}</td>`).join('')}</tr>`;
+  let t26=0,t30=0;
+  const chRows = S.channels.map(c=>{ t26+=c[2]; t30+=c[3]; const g=Math.round((c[3]-c[2])/c[2]*100);
+    return `<tr><td><b>${c[0]}</b></td><td style="text-align:right;">${c[2].toLocaleString('en-GB')}</td><td style="text-align:right;">${c[3].toLocaleString('en-GB')}</td><td style="text-align:right;">+${g}%</td><td>${c[4]}</td><td>${c[5]}</td></tr>`; }).join('')
+    + `<tr style="font-weight:700;"><td>Total</td><td style="text-align:right;">${t26.toLocaleString('en-GB')}</td><td style="text-align:right;">${t30.toLocaleString('en-GB')}</td><td style="text-align:right;">+${Math.round((t30-t26)/t26*100)}%</td><td colspan="2"></td></tr>`;
+  const pr = S.pricing.map(p=>`<tr><td style="white-space:nowrap;"><b>${p[0]}</b></td><td>${p[1]}</td><td>${p[2]}</td></tr>`).join('');
+  const pil = S.pillars.map(p=>`<tr><td style="white-space:nowrap;"><b>${p[0]}. ${p[1]}</b></td><td style="text-align:center;">${p[2]}</td><td>${p[3]}</td><td>${p[4]}</td></tr>`).join('');
+  const del = S.delivery.map(d=>`<tr><td style="white-space:nowrap;"><b>${d[0]}</b></td><td>${d[1]}</td></tr>`).join('');
+  const chk = STRATEGY_CHECKS.map(c=>`<tr><td style="white-space:nowrap;vertical-align:top;"><span class="badge warn">${c[0]}</span></td><td>${c[1]}</td></tr>`).join('');
+  return `
+  <div class="card">
+    <h2>Strategy 2026–2030 — the board plan</h2>
+    <p class="sub">From the Siel Bleu Ireland Strategy Document (November 2026). Read-only: the figures are as printed. The growth target below, the route prices and the personas have been updated to match.</p>
+    <div class="statgrid" style="grid-template-columns:repeat(6,1fr);">${head}</div>
+    <h3 style="margin-top:18px;">Financial projections</h3>
+    <div style="overflow-x:auto;"><table><thead><tr><th></th>${S.years.map(y=>`<th style="text-align:right;">${y}</th>`).join('')}</tr></thead><tbody>${finRows}</tbody></table></div>
+    <h3 style="margin-top:18px;">Participants a week and price, by channel</h3>
+    <div style="overflow-x:auto;"><table><thead><tr><th>Channel</th><th style="text-align:right;">2026</th><th style="text-align:right;">2030</th><th style="text-align:right;">Growth</th><th>Price 2026</th><th>Price 2030 (est.)</th></tr></thead><tbody>${chRows}</tbody></table></div>
+    <h3 style="margin-top:18px;">Delivery and workforce</h3>
+    <table><tbody>${del}</tbody></table>
+    <h3 style="margin-top:18px;">Pricing roadmap</h3>
+    <p class="sub">Transparent, evidence-based pricing that reflects the true cost of delivery. Reviewed on a 24-month cycle.</p>
+    <table><tbody>${pr}</tbody></table>
+    <h3 style="margin-top:18px;">Five strategic pillars</h3>
+    <div style="overflow-x:auto;"><table><thead><tr><th>Pillar</th><th>2026 rating</th><th>Phase</th><th>Key numbers</th></tr></thead><tbody>${pil}</tbody></table></div>
+    <h3 style="margin-top:18px;">Check before relying on these figures</h3>
+    <p class="sub">Places where the strategy disagrees with itself or with this tool. Settle these with Thomas before the numbers drive targets.</p>
+    <div style="overflow-x:auto;"><table><tbody>${chk}</tbody></table></div>
+  </div>`;
+}
+function buildMarketPanel(){ return buildStrategyCard() + buildTargetCard() + buildRoiSizingCard() + buildSO1TrackerCard(); }
 function buildBoardPanel(){ return buildSummaryPanel(); }
 function buildBlueprintPanel(){ return CRM_STATIC.blueprint; }
 
@@ -3041,7 +3131,7 @@ function updateAll(){
     // ---- Bookings needed for the ambition ----
     const bookingsEl = document.getElementById('dash-bookings');
     if(bookingsEl){
-      const unitWord = {nursinghomes:'slots', patientgroups:'groups', onetoone:'clients', hospital:'slots'};
+      const unitWord = {nursinghomes:'slots', patientgroups:'groups', onetoone:'clients', hospital:'places'};
       let bkRows = '', tToday=0, tAdd=0, tSessions=0, anyBk=false;
       products.forEach(p=>{
         if(p.key==='online') return;
@@ -3759,13 +3849,15 @@ document.addEventListener('click', e=>{
 // ---------- persistence: Airtable-backed durable saving, plus localStorage + import backup ----------
 const STORAGE_KEY = 'sielbleu_pricing_tool_v1';
 
+let strategyUpdate = ''; // set to '2026-11' once the Strategy 2026–2030 figures have been applied
 function getFullState(){
-  return {overhead, overheadLines:OVERHEAD_LINES, overheadLineCounter, products, competitorData, marketValueData, finalPricingData, roiAnswers, checklistState, so1ActionState, accounts, accountIdCounter, contracts, contractIdCounter, marketTargets, competitorIdCounter, exchangeRate, journeyStages, pathwaySteps, pathwayIdCounter, pipeline, pipelineIdCounter,
+  return {strategyUpdate, overhead, overheadLines:OVERHEAD_LINES, overheadLineCounter, products, competitorData, marketValueData, finalPricingData, roiAnswers, checklistState, so1ActionState, accounts, accountIdCounter, contracts, contractIdCounter, marketTargets, competitorIdCounter, exchangeRate, journeyStages, pathwaySteps, pathwayIdCounter, pipeline, pipelineIdCounter,
           niMarketSizing, niPrizeTarget, borderRelationships, borderIdCounter, so2ChecklistState, roiMarketSizing, workforcePlan, personas, personaIdCounter, marketingActivities, activityIdCounter, showNotes: document.getElementById("toggle-notes").checked};
 }
 
 function applyState(state){
   if(!state) return;
+  if(state.strategyUpdate) strategyUpdate = state.strategyUpdate;
   // Restore the overhead line definitions first (they may include user-added custom lines),
   // mutating the existing array in place so all closures keep referring to the same list.
   if(state.overheadLines && Array.isArray(state.overheadLines) && state.overheadLines.length){
@@ -4155,6 +4247,64 @@ function downloadExcel(){
 
 function round2(n){ return Math.round(n*100)/100; }
 
+
+// One-time update (Nov 2026): bring saved data into line with the Siel Bleu Strategy 2026–2030.
+// Runs once on the live save, then records strategyUpdate='2026-11' so it never runs again.
+// Returns true if it changed anything (so the caller can save).
+function applyStrategy2026(){
+  if(strategyUpdate==='2026-11') return false;
+  marketTargets.ambition = '4125000';
+  marketTargets.baseline = '2022000';
+  marketTargets.targetDate = 'Dec 2030 (Strategy 2026–2030, Nov 2026)';
+  workforcePlan.currentTrainers = '45';
+  workforcePlan.targetTrainers = '85';
+  const setP = (k, obj)=>{ const p = findProduct(k); if(p) Object.assign(p, obj); };
+  setP('nursinghomes', {priceNote:'Strategy 2026 price €90 a session (2030 estimate €99.25). Priority-one route: 5,500 → 8,500 participants a week; 290 NH and day-care clients (~15,000 sessions a year) by 2030.'});
+  setP('patientgroups', {priceNote:'Strategy 2026 price €85 a session for chronic-condition groups (2030 estimate €93.70). Fastest-growing channel: 4,090 → 13,400 participants a week.'});
+  setP('onetoone', {priceNote:'Strategy 2026 price €65 a session (2030 estimate €76). Below the €75.38 cost floor. Channel grows 80 → 700 participants a week via GP, PHN and hospital-discharge referral.'});
+  setP('hospital', {name:'Community Groups', unit:'participant place', unitPlural:'participant places', priceNI:10,
+    priceNote:'Strategy 2026: €10 per participant per session (2030 estimate €11). 3,050 → 5,800 participants a week. Not yet given a share of the cost base.'});
+  setP('online', {priceNI:25, priceNote:'Strategy price €25 a month, held flat to 2030. 280 → 1,600 participants a week. Chronic-condition online groups are priced at €85 a session.'});
+
+  const mv = (k, seg, vp)=>{ marketValueData[k] = marketValueData[k] || {segments:'', valueProp:''}; marketValueData[k].segments = seg; if(vp!==null) marketValueData[k].valueProp = vp; };
+  mv('nursinghomes', 'Older adults 80–89 and 90+ in nursing homes and day-care centres; goal of 290 NH and day-care clients (~15,000 sessions a year) by 2030', null);
+  mv('patientgroups', "Chronic conditions, ages 4–100+: Parkinson's, arthritis, dementia, diabetes, COPD, mental health, cancer, heart disease, muscular dystrophy, physical and intellectual disabilities", null);
+  mv('onetoone', 'All older-adult bands (65–79, 80–89, 90+) and chronic conditions; community one-to-one at home, and nursing-home one-to-one for high-dependency residents',
+     'Community one-to-one: an expert trainer travels to the home for a tailored 30-minute session, with family or friends encouraged to join. Nursing-home one-to-one: for residents with high dependency or who prefer not to join a group.');
+  mv('hospital', 'Older adults 65–79, 80–89 and 90+, and people with chronic conditions, in local community groups',
+     'A wide range of exercise programmes that improve physical, social and mental health while staying close to home.');
+  mv('online', 'Ages 65–79 and people with chronic conditions; anyone who cannot reach an in-person session, anywhere in Ireland',
+     'Live classes led by expert trainers: online group classes tailored to a need (e.g. Mobility and Stretch), and online one-to-one sessions with a personal programme and real-time feedback.');
+
+  const ps = id=>personas.find(x=>x.id===id);
+  const setPs = (id,obj)=>{ const x=ps(id); if(x) Object.assign(x,obj); };
+  setPs('ps1', {ageBand:'65–79', routes:'Community groups, one-to-one, online, patient groups'});
+  setPs('ps2', {ageBand:'80–89', routes:'One-to-one, day care, nursing homes, community groups'});
+  setPs('ps3', {ageBand:'90+', routes:'One-to-one, day care, nursing homes, community groups'});
+  setPs('ps4', {ageBand:'Chronic conditions (4–100+)', routes:'Community groups, one-to-one, online, patient groups, day care, nursing homes'});
+
+  const ac = id=>marketingActivities.find(x=>x.id===id);
+  const setAc = (id,obj)=>{ const x=ac(id); if(x) Object.assign(x,obj); };
+  setAc('ac1', {activity:'Demand-generation plan: 40 new nursing-home sessions a year (urban areas first)',
+    target:'40 new NH sessions a year → 290 NH and day-care clients (~15,000 sessions a year) by 2030', when:'2026–2030'});
+  setAc('ac2', {target:'Improved retention of current clients (strategy still to quantify)'});
+  setAc('ac4', {activity:'Pricing roadmap: Rebase 2025, Implement 2026, Understand 2027, Reset 2028, Index 2029, Optimise 2030 — 24-month review cycle',
+    target:'Prices reflect the true cost of delivery; 10% annual surplus', when:'2025–2030'});
+  [
+    ['Awareness campaigns, media and participant ambassadors (Pillar 5)','All services','Reach 500,000 people a year','Marketing'],
+    ['Grow patient-group and chronic-disease programmes, incl. HSE CDM','Patient Groups','4,090 → 13,400 participants a week by 2030','Thomas'],
+    ['Build one-to-one and home-based services through GP, PHN and hospital-discharge referral','One-to-One','80 → 700 participants a week by 2030','Thomas'],
+    ['Develop and scale online and hybrid classes (Pillar 2)','Online','280 → 1,600 participants a week by 2030','Head of Online Programmes'],
+    ['Grow community-group delivery','Community Groups','3,050 → 5,800 participants a week by 2030','Regional leads']
+  ].forEach(a=>{
+    if(marketingActivities.some(x=>x.activity===a[0])) return;
+    marketingActivities.push({id:nextActivityId(), activity:a[0], route:a[1], target:a[2], owner:a[3], when:'2026–2030', status:'Planned'});
+  });
+  so1ActionState.boardplan = true;
+  strategyUpdate = '2026-11';
+  return true;
+}
+
 function initApp(){
   buildTabNav();
   buildApp();
@@ -4169,17 +4319,21 @@ function initApp(){
         const local = loadStateFromLocalStorage();
         setSaveStatus(local ? 'Loaded your last save from this device' : 'No saved work yet — start entering figures');
       }
+      const migrated = applyStrategy2026();
       buildApp();
       updateAll();
       _initComplete = true;
+      if(migrated){ saveStateToLocalStorage(); setSaveStatus('Updated to the Strategy 2026–2030 figures and saved'); }
     })
     .catch(()=>{
       airtableAvailable = false;
       const local = loadStateFromLocalStorage();
       setSaveStatus(local ? 'Loaded your last save from this device (working offline)' : 'No saved work yet — start entering figures');
+      const migrated = applyStrategy2026();
       buildApp();
       updateAll();
       _initComplete = true;
+      if(migrated) saveStateToLocalStorage();
     });
 }
 
